@@ -23,8 +23,6 @@ export class AppError extends Error {
     constructor(args: AppErrorArgs) {
         super(args.description);
 
-        Object.setPrototypeOf(this, new.target.prototype);
-
         this._name = args.name || "Error";
         this._httpCode = args.httpCode;
 
@@ -32,7 +30,7 @@ export class AppError extends Error {
             this._isOperational = args.isOperational;
         }
 
-        Error.captureStackTrace(this);
+        Error.captureStackTrace(this, AppError);
     }
 
     public get name() {
