@@ -1,126 +1,114 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
-import { IUser, UserModel } from "@/models/users.ts";
+import { UserModel } from "@/models/users.ts";
+import { validateUser } from "@/validators/usersValidator.ts";
 import { AppError, HttpCode } from "@/exceptions/AppError.ts";
 
 class UserController {
 
-    private validateUser = (data: Partial<IUser>): string | null => {
-        if (!data.username || data.username.length < 3 || data.username.length > 50) {
-            return "Username must be between 3-50 characters!";
-        };
-
-        if (!data.email || !/^[A-Za-z0-9]+@fmi.uni-sofia.bg$/.test(data.email)) {
-            return "Invalid email format!";
-        };
-
-        return null;
-    };
-
-    public getUsers = async (req: Request, res: Response) => {
-        const users = await UserModel.find().populate("friends", "username email");
-
-        if (!users) {
-            throw new AppError({
+    public getUsers = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const users = await UserModel.find().populate("friends", "username email");
+            res.status(200).json(users);
+        } catch (err) {
+            next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Could not fetch users!"
-            });
+            }));
         };
-
-        res.status(200).json(users);
     };
 
-    public getUser = async (req: Request, res: Response) => {
-        const { id } = req.params;
+    public getUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { user_id } = req.params;
+            const user = await UserModel.findById(user_id).populate("friends", "username email");
 
-        if (!Types.ObjectId.isValid(id)) {
-            throw new AppError({
+            if (!user) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "User not found!"
+                }));
+            };
+
+            res.status(200).json(user);
+        } catch (err) {
+            next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Invalid user ID!"
+            }));
+        };
+    };
+
+    public createUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const err = validateUser(req.body);
+
+            if (err) {
+                return next(new AppError({
+                    httpCode: HttpCode.BAD_REQUEST,
+                    description: "Invalid user provided!",
+                }));
+            };
+
+            const newUser = await UserModel.create(req.body);
+            res.status(201).json(newUser);
+        } catch (err) {
+            next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Error creating user!"
+            }));
+        };
+    };
+
+    public updateUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { user_id } = req.params;
+            const err = validateUser(req.body);
+
+            if (err) {
+                return next(new AppError({
+                    httpCode: HttpCode.BAD_REQUEST,
+                    description: "Invalid user provided!",
+                }));
+            };
+
+            const updatedUser = await UserModel.findByIdAndUpdate(user_id, req.body, { new: true });
+
+            if (!updatedUser) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "User not found!",
+                }));
+            };
+
+            res.status(200).json(updatedUser);
+        } catch (err) {
+            next(new AppError({
                 httpCode: HttpCode.BAD_REQUEST,
                 description: "Invalid user ID!",
-            });
+            }));
         };
-
-        const user = await UserModel.findById(id).populate("friends", "username email");
-
-        if (!user) {
-            throw new AppError({
-                httpCode: HttpCode.NOT_FOUND,
-                description: "User not found!"
-            });
-        };
-
-        res.status(200).json(user);
     };
 
-    public createUser = async (req: Request, res: Response) => {
-        const err = this.validateUser(req.body);
+    public deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { user_id } = req.params;
+            const deletedUser = await UserModel.findByIdAndDelete(user_id);
 
-        if (err) {
-            throw new AppError({
-                httpCode: HttpCode.BAD_REQUEST,
-                description: "Invalid user provided!",
-            });
-        };
+            if (!deletedUser) {
+                throw new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "User not found!",
+                });
+            };
 
-        const newUser = new UserModel(req.body);
-        const savedUser = await newUser.save();
-
-        res.status(201).json(savedUser);
-    };
-
-    public updateUser = async (req: Request, res: Response) => {
-        const { id } = req.params;
-
-        if (!Types.ObjectId.isValid(id)) {
-            throw new AppError({
+            res.status(200).json({ message: "User deleted successfully!" });
+        } catch (err) {
+            next(new AppError({
                 httpCode: HttpCode.BAD_REQUEST,
                 description: "Invalid user ID!",
-            });
+            }));
         };
-
-        const err = this.validateUser(req.body);
-
-        if (err) {
-            throw new AppError({
-                httpCode: HttpCode.BAD_REQUEST,
-                description: "Invalid user provided!",
-            });
-        };
-
-        const updatedUser = await UserModel.findByIdAndUpdate(id, req.body, { new: true });
-
-        if (!updatedUser) {
-            throw new AppError({
-                httpCode: HttpCode.NOT_FOUND,
-                description: "User not found!",
-            });
-        };
-
-        res.status(200).json(updatedUser);
-    };
-
-    public deleteUser = async (req: Request, res: Response) => {
-        const { id } = req.params;
-
-        if (!Types.ObjectId.isValid(id)) {
-            throw new AppError({
-                httpCode: HttpCode.BAD_REQUEST,
-                description: "Invalid user ID!",
-            });
-        };
-
-        const deletedUser = await UserModel.findByIdAndDelete(id);
-
-        if (!deletedUser) {
-            throw new AppError({
-                httpCode: HttpCode.NOT_FOUND,
-                description: "User not found!",
-            });
-        };
-
-        res.status(200).json({
-            message: "User deleted successfully!"
-        });
     };
 };
 

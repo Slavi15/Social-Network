@@ -1,20 +1,11 @@
-import mongoose, { Connection } from "mongoose";
-import env from "@/lib/env";
-import { AppError, HttpCode } from "@/exceptions/AppError";
-
-let cachedConnection: Connection | null = null;
+import mongoose from "mongoose";
+import env from "@/lib/env.ts";
+import { AppError, HttpCode } from "@/exceptions/AppError.ts";
 
 export const connectToDB = async () => {
-    if (cachedConnection) {
-        console.log("Connection already exists!");
-        return cachedConnection;
-    };
-
     try {
-        const cnx = await mongoose.connect(env.MONGO_URI);
-        cachedConnection = cnx.connection;
+        await mongoose.connect(env.MONGO_URI);
         console.log("Successfully established MongoDB connection!");
-        return cachedConnection;
     } catch (err) {
         throw new AppError({
             httpCode: HttpCode.INTERNAL_SERVER_ERROR,
