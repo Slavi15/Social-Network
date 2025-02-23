@@ -30,7 +30,15 @@ class PostController {
     public getPost = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { post_id } = req.params;
-            const post = await PostModel.findById(post_id).populate("user_id", "username email");
+            const post = await PostModel.findById(post_id)
+                .populate("user_id", "username email")
+                .populate({
+                    path: "comments",
+                    populate: {
+                        path: "user_id",
+                        select: "username email"
+                    }
+                });
 
             if (!post) {
                 return next(new AppError({
