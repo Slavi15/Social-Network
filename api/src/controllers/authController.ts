@@ -59,11 +59,7 @@ class AuthController {
                 }));
             }
 
-            const newUser = await UserModel.create({
-                username,
-                email,
-                password,
-            });
+            const newUser = await UserModel.create(req.body);
 
             const accessToken = generateAccessToken(newUser._id.toString());
             await setRefreshToken(res, newUser._id.toString());

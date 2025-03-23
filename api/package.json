@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.1",
     "morgan": "^1.10.0",
+    "socket.io": "^4.8.1",
     "ts-patch": "^3.3.0",
     "typescript-transform-paths": "^3.5.3",
     "zod": "^3.24.2"
@@ -34,6 +35,7 @@
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.13.4",
+    "@types/socket.io": "^3.0.1",
     "eslint": "^9.20.1",
     "typescript-eslint": "^8.24.1"
   }

@@ -2,7 +2,8 @@ import { z } from "zod";
 
 const envSchema = z.object({
     ORIGIN: z.string().url(),
-    PORT: z.coerce.number().min(3000).max(8000),
+    PORT: z.coerce.number().min(3000).max(8000).default(7000),
+    WS_PORT: z.coerce.number().min(3000).max(8000).default(7001),
     NODE_ENV: z
         .union([ z.literal("development"), z.literal("production") ])
         .default("development"),
