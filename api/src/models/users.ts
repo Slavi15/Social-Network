@@ -1,12 +1,16 @@
 import { Schema, Types, Document, model } from "mongoose";
+import bcrypt from "bcrypt";
 
 export interface IUser extends Document {
-    username: string,
-    email: string,
-    profile_picture: string,
-    friends: Types.ObjectId[],
-    is_active: boolean,
-};
+    _id: Types.ObjectId;
+    username: string;
+    email: string;
+    password: string;
+    profile_picture: string;
+    friends: Types.ObjectId[];
+    is_active: boolean;
+    comparePassword(candidatePassword: string): Promise<boolean>;
+}
 
 const UserSchema = new Schema<IUser>(
     {
@@ -22,6 +26,11 @@ const UserSchema = new Schema<IUser>(
             required: [true, "You must enter email!"],
             unique: true,
             match: [/^[A-Za-z0-9]+@fmi.uni-sofia.bg$/, "Invalid email format!"],
+        },
+        password: {
+            type: String,
+            required: [true, "You must enter a password!"],
+            minlength: [8, "Password must be at least 8 characters long!"],
         },
         profile_picture: {
             type: String,
@@ -42,8 +51,24 @@ const UserSchema = new Schema<IUser>(
         },
     },
     {
-        timestamps: true
+        timestamps: true,
     }
 );
+
+UserSchema.pre<IUser>("save", async function (next) {
+    if (!this.isModified("password")) return next();
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (err) {
+        next(err as Error);
+    }
+});
+
+UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+    return bcrypt.compare(candidatePassword, this.password);
+};
 
 export const UserModel = model<IUser>("User", UserSchema);

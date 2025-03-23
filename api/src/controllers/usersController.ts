@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { Types } from "mongoose";
 import { UserModel } from "@/models/users.ts";
 import { validateUser } from "@/validators/usersValidator.ts";
 import { AppError, HttpCode } from "@/exceptions/AppError.ts";
@@ -35,27 +34,6 @@ class UserController {
             next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Invalid user ID!"
-            }));
-        };
-    };
-
-    public createUser = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const err = validateUser(req.body);
-
-            if (err) {
-                return next(new AppError({
-                    httpCode: HttpCode.BAD_REQUEST,
-                    description: "Invalid user provided!",
-                }));
-            };
-
-            const newUser = await UserModel.create(req.body);
-            res.status(201).json(newUser);
-        } catch (err) {
-            next(new AppError({
-                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-                description: "Error creating user!"
             }));
         };
     };
@@ -110,6 +88,7 @@ class UserController {
             }));
         };
     };
+    
 };
 
 export const usersController = new UserController();

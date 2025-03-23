@@ -7,6 +7,8 @@ const envSchema = z.object({
         .union([ z.literal("development"), z.literal("production") ])
         .default("development"),
     MONGO_URI: z.string(),
+    JWT_ACCESS_SECRET: z.string(),
+    JWT_REFRESH_SECRET: z.string()
 });
 
 const env = envSchema.parse(process.env);

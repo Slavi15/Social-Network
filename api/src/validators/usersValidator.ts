@@ -9,5 +9,9 @@ export const validateUser = (data: Partial<IUser>): string | null => {
         return "Invalid email format!";
     };
 
+    if (data.password && data.password.length < 8) {
+        return "Password must be at least 8 characters long!";
+    }
+
     return null;
 };
