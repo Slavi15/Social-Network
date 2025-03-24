@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { FriendRequestModel } from "@/models/friendRequests.ts";
+import { FriendRequestModel, FriendRequestStatus } from "@/models/friendRequests.ts";
 import { UserModel } from "@/models/users.ts";
 import { AppError, HttpCode } from "@/exceptions/AppError.ts";
 
@@ -55,7 +55,7 @@ class FriendRequestController {
                 }));
             }
 
-            request.status = "accepted";
+            request.status = FriendRequestStatus.ACCEPTED;
             await request.save();
 
             await UserModel.findByIdAndUpdate(request.sender, { $addToSet: { friends: request.receiver } });
@@ -90,7 +90,7 @@ class FriendRequestController {
                 }));
             }
 
-            request.status = "rejected";
+            request.status = FriendRequestStatus.REJECTED;
             await request.save();
 
             res.status(200).json({ message: "Friend request rejected!" });
@@ -101,7 +101,7 @@ class FriendRequestController {
             }));
         }
     };
-    
+
 }
 
 export const friendRequestController = new FriendRequestController();

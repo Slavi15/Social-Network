@@ -22,7 +22,7 @@ class EventController {
             const newEvent = await EventModel.create({ creators, title, description, date });
             res.status(201).json(newEvent);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Error creating event!",
             }));
@@ -52,7 +52,7 @@ class EventController {
 
             res.status(200).json(updatedEvent);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Error updating event!",
             }));
@@ -94,7 +94,7 @@ class EventController {
 
             res.status(200).json(event);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Error adding creator!",
             }));
@@ -127,7 +127,7 @@ class EventController {
 
             res.status(200).json(event);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Error removing creator!",
             }));
@@ -169,7 +169,7 @@ class EventController {
 
             res.status(200).json(event);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Error joining event!",
             }));
@@ -202,7 +202,7 @@ class EventController {
 
             res.status(200).json(event);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Error leaving event!",
             }));
