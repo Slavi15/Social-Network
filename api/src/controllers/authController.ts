@@ -4,10 +4,11 @@ import { IUser, UserModel } from "@/models/users";
 import { AppError, HttpCode } from "@/exceptions/AppError";
 import { generateAccessToken, setRefreshToken } from "@/utils/generateTokens";
 import { RegisterRequest } from "@/types/auth/register";
+import redisService from "@/services/tokens";
 import env from "@/lib/env";
 
 class AuthController {
-    
+
     public login = async (req: LoginRequest, res: LoginResponse, next: NextFunction) => {
         try {
             const { email, password } = req.body;
@@ -77,21 +78,26 @@ class AuthController {
         }
     };
 
-    public logout = async (req: Request, res: Response, next: NextFunction) => {
+    async logout(req: Request, res: Response) {
         try {
-            res.clearCookie("refreshToken", {
+            const { accessToken, refreshToken } = req.cookies;
+
+            if (accessToken) await redisService.addToBlacklist(accessToken);
+            if (refreshToken) await redisService.addToBlacklist(refreshToken);
+
+            res.clearCookie('accessToken', {
                 httpOnly: true,
-                secure: env.NODE_ENV === "production",
+                secure: env.NODE_ENV === 'production',
             });
 
-            res.status(200).json({
-                message: "Successfully logged out",
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: env.NODE_ENV === 'production',
             });
+
+            res.status(200).json({ message: 'Logged out successfully' });
         } catch (err) {
-            return next(new AppError({
-                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-                description: "Internal server error",
-            }));
+            res.status(500).json({ error: 'Logout failed' });
         }
     };
 
