@@ -3,7 +3,7 @@ import { api } from './authApi';
 import type { RootState } from '../store';
 import type { IUser } from '../types/index';
 
-enum AuthStatus {
+export enum AuthStatus {
     IDLE = "IDLE",
     LOADING = "LOADING",
     SUCCEEDED = "SUCCEEDED",

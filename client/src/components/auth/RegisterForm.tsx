@@ -1,16 +1,18 @@
 import { Formik, Form, Field } from 'formik';
+// import { useNavigate } from 'react-router-dom';
 import { RegisterSchema } from '../../schemas/auth';
 import { InputField } from './InputField';
 import { useRegisterMutation } from '../../redux/auth/authApi';
 
-const RegisterForm = () => {
+const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
     const [register, { isLoading }] = useRegisterMutation();
+    // const navigate = useNavigate();
 
     return (
         <Formik
-            initialValues={{ 
-                username: '', 
-                email: '', 
+            initialValues={{
+                username: '',
+                email: '',
                 password: ''
             }}
             validationSchema={RegisterSchema}
@@ -18,13 +20,15 @@ const RegisterForm = () => {
                 try {
                     const { ...registerData } = values;
                     await register(registerData).unwrap();
+                    onSuccess();
                 } catch (error: any) {
-                    setErrors({ 
-                        email: ' ', 
+                    setErrors({
+                        email: ' ',
                         password: 'Registration failed',
                     });
                 } finally {
                     setSubmitting(false);
+                    // navigate('/');
                 }
             }}
         >
@@ -57,15 +61,9 @@ const RegisterForm = () => {
                     <button
                         type="submit"
                         disabled={isSubmitting || !isValid || !dirty || isLoading}
-                        className={`submit-btn ${isSubmitting ? 'loading' : ''}`}
+                        className={`submit-btn`}
                     >
-                        {isLoading ? (
-                            <>
-                                <span className="spinner" /> Registering...
-                            </>
-                        ) : (
-                            'Register'
-                        )}
+                        Register
                     </button>
                 </Form>
             )}

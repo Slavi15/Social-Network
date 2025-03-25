@@ -8,9 +8,10 @@ const LogoutForm = () => {
     const handleLogout = async () => {
         try {
             await logout().unwrap();
-            navigate('/');
         } catch (error) {
             console.error('Logout failed:', error);
+        } finally {
+            navigate('/');
         }
     };
 
@@ -18,15 +19,9 @@ const LogoutForm = () => {
         <button
             onClick={handleLogout}
             disabled={isLoading}
-            className={`logout-btn ${isLoading ? 'loading' : ''}`}
+            className={`logout-btn`}
         >
-            {isLoading ? (
-                <>
-                    <span className="spinner" /> Logging out...
-                </>
-            ) : (
-                'Logout'
-            )}
+            Logout
         </button>
     );
 };

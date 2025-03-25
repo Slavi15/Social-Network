@@ -1,10 +1,12 @@
 import { Formik, Form, Field } from 'formik';
+// import { useNavigate } from 'react-router-dom';
 import { LoginSchema } from '../../schemas/auth';
 import { InputField } from './InputField';
 import { useLoginMutation } from '../../redux/auth/authApi';
 
-const LoginForm = () => {
+const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
     const [login, { isLoading }] = useLoginMutation();
+    // const navigate = useNavigate();
 
     return (
         <Formik
@@ -13,10 +15,12 @@ const LoginForm = () => {
             onSubmit={async (values, { setSubmitting, setErrors }) => {
                 try {
                     await login(values).unwrap();
+                    onSuccess();
                 } catch (error: any) {
                     setErrors({ email: ' ', password: 'Invalid credentials' });
                 } finally {
                     setSubmitting(false);
+                    // navigate('/');
                 }
             }}
         >
@@ -41,15 +45,9 @@ const LoginForm = () => {
                     <button
                         type="submit"
                         disabled={isSubmitting || !isValid || !dirty || isLoading}
-                        className={`submit-btn ${isSubmitting ? 'loading' : ''}`}
+                        className={`submit-btn`}
                     >
-                        {isLoading ? (
-                            <>
-                                <span className="spinner" /> Logging in...
-                            </>
-                        ) : (
-                            'Login'
-                        )}
+                        Login
                     </button>
                 </Form>
             )}
