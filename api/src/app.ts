@@ -14,6 +14,7 @@ app.use(helmet());
 
 app.use(cors({
     origin: env.ORIGIN,
+    credentials: true,
 }));
 
 app.use(express.json());
