@@ -9,10 +9,10 @@ import authRouter from "./authRouter.ts";
 const router = Router();
 
 router.use("/users", userRouter);
+router.use("/auth", authRouter);
 router.use("/posts", postsRouter);
 router.use("/events", eventsRouter);
 router.use("/requests", friendRequestsRouter);
 router.use("/chats", chatRouter);
-router.use("/auth", authRouter);
 
 export default router;

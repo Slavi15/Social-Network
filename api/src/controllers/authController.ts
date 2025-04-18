@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import { LoginRequest, LoginResponse } from "@/types/auth/login";
 import { IUser, UserModel } from "@/models/users";
 import { AppError, HttpCode } from "@/exceptions/AppError";
-import { generateAccessToken, setRefreshToken } from "@/utils/generateTokens";
+import { generateAccessToken, generateRefreshToken, setRefreshToken } from "@/utils/generateTokens";
 import { RegisterRequest } from "@/types/auth/register";
-import redisService from "@/services/tokens";
+import { redisService } from "@/services/tokens";
 import env from "@/lib/env";
 
 class AuthController {
@@ -32,13 +32,15 @@ class AuthController {
             }
 
             const accessToken = generateAccessToken(user._id.toString());
+
             await setRefreshToken(res, user._id.toString());
 
-            res.status(200).json({
-                accessToken,
-                user,
-                message: "Successfully logged in",
-            });
+            res.status(HttpCode.OK)
+                .json({
+                    accessToken,
+                    user,
+                    message: "Successfully logged in",
+                });
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -65,7 +67,7 @@ class AuthController {
             const accessToken = generateAccessToken(newUser._id.toString());
             await setRefreshToken(res, newUser._id.toString());
 
-            res.status(201).json({
+            res.status(HttpCode.CREATED).json({
                 accessToken,
                 user: newUser,
                 message: "Successfully registered",
@@ -78,26 +80,44 @@ class AuthController {
         }
     };
 
-    async logout(req: Request, res: Response) {
+    public logout = async (req: Request, res: Response, next: NextFunction) => {
+        const { accessToken, refreshToken } = req.cookies;
+
         try {
-            const { accessToken, refreshToken } = req.cookies;
+            const destroySession = (): Promise<void> => {
+                return new Promise((resolve, reject) => {
+                    if (!req.session) return resolve();
+                    req.session.destroy((err) => {
+                        err ? reject(err) : resolve();
+                    });
+                });
+            };
 
-            if (accessToken) await redisService.addToBlacklist(accessToken);
-            if (refreshToken) await redisService.addToBlacklist(refreshToken);
+            await Promise.allSettled([
+                accessToken ? redisService.addToBlacklist(accessToken) : Promise.resolve(),
+                refreshToken ? redisService.addToBlacklist(refreshToken) : Promise.resolve(),
+                destroySession(),
+            ]);
 
-            res.clearCookie('accessToken', {
+            const cookieSettings = {
                 httpOnly: true,
                 secure: env.NODE_ENV === 'production',
-            });
+                sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax' as const,
+            };
 
-            res.clearCookie('refreshToken', {
-                httpOnly: true,
-                secure: env.NODE_ENV === 'production',
-            });
+            res.clearCookie('accessToken', cookieSettings);
+            res.clearCookie('refreshToken', cookieSettings);
+            res.clearCookie('connect.sid', cookieSettings);
 
-            res.status(200).json({ message: 'Logged out successfully' });
+            return res.status(HttpCode.OK).json({
+                success: true,
+                message: 'Logged out successfully',
+            });
         } catch (err) {
-            res.status(500).json({ error: 'Logout failed' });
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: 'Logout failed',
+            }));
         }
     };
 

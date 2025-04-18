@@ -4,13 +4,13 @@ import env from "@/lib/env";
 
 export const generateAccessToken = (userId: string): string => {
     return jwt.sign({ id: userId }, env.JWT_ACCESS_SECRET, {
-        expiresIn: "15m",
+        expiresIn: env.JWT_ACCESS_EXPIRES_IN,
     });
 };
 
 export const generateRefreshToken = (userId: string): string => {
     return jwt.sign({ id: userId }, env.JWT_REFRESH_SECRET, {
-        expiresIn: "7d",
+        expiresIn: env.JWT_REFRESH_EXPIRES_IN,
     });
 };
 
@@ -20,7 +20,7 @@ export const setRefreshToken = (res: Response, userId: string): void => {
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: env.NODE_ENV === "production",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: env.NODE_ENV === "production" ? "none" : "lax" as const
     });
 };
 

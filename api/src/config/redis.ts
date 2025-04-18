@@ -1,25 +1,59 @@
-import { createClient } from 'redis';
+import Redis from 'ioredis';
 import env from '@/lib/env';
 
-const redisClient = createClient({
-  socket: {
-    host: env.REDIS_HOST,
-    port: env.REDIS_PORT,
-    reconnectStrategy: (retries) => Math.min(retries * 100, 5000)
-  },
-  password: env.REDIS_PASSWORD
-});
+class RedisConnection {
+  private client: Redis;
+  private static instance: RedisConnection;
+  private _isConnected = false;
 
-redisClient.on('error', (err) => console.error('Redis Client Error', err));
+  private constructor() {
+    this.client = new Redis({
+      host: env.REDIS_HOST,
+      port: env.REDIS_PORT,
+      password: env.REDIS_PASSWORD,
+      retryStrategy: (times) => Math.min(times * 100, 5000)
+    });
 
-// (async () => {
-//   try {
-//     await redisClient.connect();
-//     console.log('Connected to Redis');
-//   } catch (err) {
-//     console.error('Redis connection failed:', err);
-//     process.exit(1);
-//   }
-// })();
+    this.client.on('error', (err) => console.error('Redis Client Error:', err));
 
-export default redisClient;
+    this.client.on('connect', () => console.log('Redis connecting...'));
+    this.client.on('ready', () => {
+      console.log('Redis connected');
+      this._isConnected = true;
+    });
+
+    this.client.on('end', () => {
+      console.log('Redis disconnected');
+      this._isConnected = false;
+    });
+
+    this.client.on('reconnecting', () => {
+      this._isConnected = false;
+    });
+  }
+
+  public static getInstance(): RedisConnection {
+    if (!RedisConnection.instance) {
+      RedisConnection.instance = new RedisConnection();
+    }
+    return RedisConnection.instance;
+  }
+
+  public getClient(): Redis {
+    return this.client;
+  }
+
+  public async disconnect(): Promise<void> {
+    if (this._isConnected) {
+      await this.client.quit();
+      this._isConnected = false;
+    }
+  }
+
+  public isConnected(): boolean {
+    return this._isConnected;
+  }
+}
+
+const redis = RedisConnection.getInstance();
+export default redis;
