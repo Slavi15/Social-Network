@@ -4,13 +4,13 @@ import env from "@/lib/env";
 
 export const generateAccessToken = (userId: string): string => {
     return jwt.sign({ id: userId }, env.JWT_ACCESS_SECRET, {
-        expiresIn: env.JWT_ACCESS_EXPIRES_IN,
+        expiresIn: "15m",
     });
 };
 
 export const generateRefreshToken = (userId: string): string => {
     return jwt.sign({ id: userId }, env.JWT_REFRESH_SECRET, {
-        expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+        expiresIn: "7m",
     });
 };
 

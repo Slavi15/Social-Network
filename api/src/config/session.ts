@@ -1,4 +1,4 @@
-import session, { CookieOptions } from 'express-session';
+import session, { CookieOptions, SessionOptions } from 'express-session';
 import { RedisStore } from 'connect-redis';
 import redis from '@/config/redis';
 import env from '@/lib/env';
@@ -17,7 +17,7 @@ const cookieOptions: CookieOptions = {
     sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax' as const
 };
 
-const sessionConfig: session.SessionOptions = {
+const sessionConfig: SessionOptions = {
     store: redisStore,
     secret: env.SESSION_SECRET,
     resave: false,

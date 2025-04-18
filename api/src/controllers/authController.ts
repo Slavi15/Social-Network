@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { CookieOptions, NextFunction, Request, Response } from "express";
 import { LoginRequest, LoginResponse } from "@/types/auth/login";
 import { IUser, UserModel } from "@/models/users";
 import { AppError, HttpCode } from "@/exceptions/AppError";
@@ -99,10 +99,10 @@ class AuthController {
                 destroySession(),
             ]);
 
-            const cookieSettings = {
+            const cookieSettings: CookieOptions = {
                 httpOnly: true,
                 secure: env.NODE_ENV === 'production',
-                sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax' as const,
+                sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
             };
 
             res.clearCookie('accessToken', cookieSettings);
