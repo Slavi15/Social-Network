@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { ErrorMessage, FieldProps } from 'formik';
+import styles from "../../../styles/components/auth/widgets/InputField.module.scss"
 
 interface InputFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'form'> {
     label: string;
@@ -8,17 +9,17 @@ interface InputFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElemen
 }
 
 export const InputField = memo<InputFieldProps>(({ field, form, label, ...props }) => (
-    <div className="form-group">
-        <label htmlFor={field.name} className="form-label">
+    <div className={styles.formGroup}>
+        <label htmlFor={field.name} className={styles.formLabel}>
             {label}
         </label>
         <input
             {...field}
             {...props}
-            className={`form-input ${form.touched[field.name] && form.errors[field.name] ? 'error' : ''}`}
+            className={`${styles.formInput} ${form.touched[field.name] && form.errors[field.name] ? styles.error : ''}`}
         />
         <ErrorMessage name={field.name}>
-            {(msg) => <div className="form-error">{msg}</div>}
+            {(msg) => <div className={styles.formError}>{msg}</div>}
         </ErrorMessage>
     </div>
 ));

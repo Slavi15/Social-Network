@@ -1,0 +1,14 @@
+.form { 
+    display: grid;
+    width: 100%;
+    place-items: center;
+
+    .formButton {
+        margin: 2vh auto;
+        width: 15%;
+        height: 6vh;
+        color: #FFFFFF;
+        background-color: #343434;
+        cursor: pointer;
+    }
+}

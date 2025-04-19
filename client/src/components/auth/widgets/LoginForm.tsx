@@ -4,6 +4,8 @@ import { LoginSchema } from '../../../schemas/auth';
 import { InputField } from './InputField';
 import { useLoginMutation } from '../../../redux/auth/authApi';
 
+import styles from "../../../styles/components/auth/widgets/AuthForm.module.scss"
+
 const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
     const [login, { isLoading }] = useLoginMutation();
     const navigate = useNavigate();
@@ -30,7 +32,8 @@ const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
             }}
         >
             {({ isSubmitting, isValid, dirty }) => (
-                <Form className="auth-form">
+                <Form className={styles.form}
+                    style={{ minHeight: "40vh" }}>
                     <Field
                         name="email"
                         type="email"
@@ -48,7 +51,7 @@ const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
                     <button
                         type="submit"
                         disabled={isSubmitting || !isValid || !dirty || isLoading}
-                        className="submit-btn"
+                        className={styles.formButton}
                     >
                         {isLoading ? 'Logging in...' : 'Login'}
                     </button>

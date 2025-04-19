@@ -8,13 +8,13 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { AuthProvider } from './components/auth/AuthProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </PersistGate>
-    </Provider>
-  </StrictMode>,
+	<StrictMode>
+		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
+				<AuthProvider>
+					<App />
+				</AuthProvider>
+			</PersistGate>
+		</Provider>
+	</StrictMode>,
 )

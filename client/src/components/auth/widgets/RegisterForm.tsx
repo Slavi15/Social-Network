@@ -4,6 +4,8 @@ import { RegisterSchema } from '../../../schemas/auth';
 import { InputField } from './InputField';
 import { useRegisterMutation } from '../../../redux/auth/authApi';
 
+import styles from "../../../styles/components/auth/widgets/AuthForm.module.scss"
+
 const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
     const [register, { isLoading }] = useRegisterMutation();
     const navigate = useNavigate();
@@ -34,7 +36,8 @@ const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
             }}
         >
             {({ isSubmitting, isValid, dirty }) => (
-                <Form className="auth-form">
+                <Form className={styles.form}
+                    style={{ minHeight: "55vh" }}>
                     <Field
                         name="username"
                         type="text"
@@ -59,7 +62,7 @@ const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
                     <button
                         type="submit"
                         disabled={isSubmitting || !isValid || !dirty || isLoading}
-                        className="submit-btn"
+                        className={styles.formButton}
                     >
                         {isLoading ? 'Registering...' : 'Register'}
                     </button>
