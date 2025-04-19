@@ -10,7 +10,7 @@ export enum AuthStatus {
     FAILED = "FAILED"
 }
 
-interface AuthState {
+export interface AuthState {
     user: IUser | null;
     accessToken: string | null;
     status: AuthStatus;
@@ -31,10 +31,12 @@ const authSlice = createSlice({
         setCredentials: (state, action: PayloadAction<{ user: IUser; accessToken: string }>) => {
             state.user = action.payload.user;
             state.accessToken = action.payload.accessToken;
+            state.status = AuthStatus.SUCCEEDED;
         },
         logout: (state) => {
             state.user = null;
             state.accessToken = null;
+            state.status = AuthStatus.IDLE;
         },
     },
     extraReducers: (builder) => {
@@ -79,6 +81,27 @@ const authSlice = createSlice({
                 (state, action) => {
                     state.status = AuthStatus.FAILED;
                     state.error = action.error.message || 'Registration failed';
+                }
+            )
+            .addMatcher(
+                api.endpoints.logout.matchPending,
+                (state) => {
+                    state.status = AuthStatus.LOADING;
+                }
+            )
+            .addMatcher(
+                api.endpoints.logout.matchFulfilled,
+                (state) => {
+                    state.status = AuthStatus.IDLE;
+                    state.user = null;
+                    state.accessToken = null;
+                }
+            )
+            .addMatcher(
+                api.endpoints.logout.matchRejected,
+                (state, action) => {
+                    state.status = AuthStatus.FAILED;
+                    state.error = action.error.message || 'Logout failed';
                 }
             );
     },

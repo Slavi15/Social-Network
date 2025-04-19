@@ -1,12 +1,14 @@
 import { Formik, Form, Field } from 'formik';
-// import { useNavigate } from 'react-router-dom';
-import { RegisterSchema } from '../../schemas/auth';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { RegisterSchema } from '../../../schemas/auth';
 import { InputField } from './InputField';
-import { useRegisterMutation } from '../../redux/auth/authApi';
+import { useRegisterMutation } from '../../../redux/auth/authApi';
 
 const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
     const [register, { isLoading }] = useRegisterMutation();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/';
 
     return (
         <Formik
@@ -18,17 +20,16 @@ const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
             validationSchema={RegisterSchema}
             onSubmit={async (values, { setSubmitting, setErrors }) => {
                 try {
-                    const { ...registerData } = values;
-                    await register(registerData).unwrap();
+                    await register(values).unwrap();
                     onSuccess();
+                    navigate(from, { replace: true });
                 } catch (error: any) {
                     setErrors({
                         email: ' ',
-                        password: 'Registration failed',
+                        password: error.data?.message || 'Registration failed',
                     });
                 } finally {
                     setSubmitting(false);
-                    // navigate('/');
                 }
             }}
         >
@@ -41,7 +42,6 @@ const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
                         component={InputField}
                         placeholder="Enter your username"
                     />
-
                     <Field
                         name="email"
                         type="email"
@@ -49,7 +49,6 @@ const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
                         component={InputField}
                         placeholder="Enter your email"
                     />
-
                     <Field
                         name="password"
                         type="password"
@@ -57,13 +56,12 @@ const RegisterForm = ({ onSuccess }: { onSuccess: () => void }) => {
                         component={InputField}
                         placeholder="Enter your password"
                     />
-
                     <button
                         type="submit"
                         disabled={isSubmitting || !isValid || !dirty || isLoading}
-                        className={`submit-btn`}
+                        className="submit-btn"
                     >
-                        Register
+                        {isLoading ? 'Registering...' : 'Register'}
                     </button>
                 </Form>
             )}

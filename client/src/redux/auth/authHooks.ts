@@ -1,21 +1,24 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation, useRegisterMutation, useLogoutMutation } from './authApi';
 import { selectCurrentUser, selectCurrentToken, setCredentials, logout } from './authSlice';
-import type { LoginRequest, RegisterRequest } from '../types/auth';
 import type { AppDispatch } from '../store';
 import type { SerializedError } from '@reduxjs/toolkit';
 import { IUser } from '../types';
+import { LoginRequest, RegisterRequest } from '../types/auth';
+import { usePersistStore } from '../hooks/usePersistStore';
 
 type AuthResponse<T = undefined> = {
     success: boolean;
     error?: SerializedError;
     data?: T;
+    message?: string;
 };
 
 export const useAuth = () => {
     const dispatch: AppDispatch = useDispatch();
     const user = useSelector(selectCurrentUser);
     const token = useSelector(selectCurrentToken);
+    const { isRehydrated } = usePersistStore();
 
     const [loginApi] = useLoginMutation();
     const [registerApi] = useRegisterMutation();
@@ -35,7 +38,8 @@ export const useAuth = () => {
         } catch (error) {
             return {
                 success: false,
-                error: error as SerializedError
+                error: error as SerializedError,
+                message: (error as any)?.data?.message || 'Login failed'
             };
         }
     };
@@ -54,7 +58,8 @@ export const useAuth = () => {
         } catch (error) {
             return {
                 success: false,
-                error: error as SerializedError
+                error: error as SerializedError,
+                message: (error as any)?.data?.message || 'Registration failed'
             };
         }
     };
@@ -63,11 +68,15 @@ export const useAuth = () => {
         try {
             await logoutApi().unwrap();
             dispatch(logout());
-            return { success: true };
+            return {
+                success: true,
+                message: "Logged out successfully"
+            };
         } catch (error) {
             return {
                 success: false,
-                error: error as SerializedError
+                error: error as SerializedError,
+                message: "Logout failed"
             };
         }
     };
@@ -78,6 +87,6 @@ export const useAuth = () => {
         login: handleLogin,
         register: handleRegister,
         logout: handleLogout,
-        isAuthenticated: !!token
+        isAuthenticated: !!token && isRehydrated
     };
 };

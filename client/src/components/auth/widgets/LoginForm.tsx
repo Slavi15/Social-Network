@@ -1,12 +1,14 @@
 import { Formik, Form, Field } from 'formik';
-// import { useNavigate } from 'react-router-dom';
-import { LoginSchema } from '../../schemas/auth';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { LoginSchema } from '../../../schemas/auth';
 import { InputField } from './InputField';
-import { useLoginMutation } from '../../redux/auth/authApi';
+import { useLoginMutation } from '../../../redux/auth/authApi';
 
 const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
     const [login, { isLoading }] = useLoginMutation();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/';
 
     return (
         <Formik
@@ -16,11 +18,14 @@ const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 try {
                     await login(values).unwrap();
                     onSuccess();
+                    navigate(from, { replace: true });
                 } catch (error: any) {
-                    setErrors({ email: ' ', password: 'Invalid credentials' });
+                    setErrors({
+                        email: ' ',
+                        password: error.data?.message || 'Invalid credentials',
+                    });
                 } finally {
                     setSubmitting(false);
-                    // navigate('/');
                 }
             }}
         >
@@ -33,7 +38,6 @@ const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
                         component={InputField}
                         placeholder="Enter your email"
                     />
-
                     <Field
                         name="password"
                         type="password"
@@ -41,13 +45,12 @@ const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
                         component={InputField}
                         placeholder="Enter your password"
                     />
-
                     <button
                         type="submit"
                         disabled={isSubmitting || !isValid || !dirty || isLoading}
-                        className={`submit-btn`}
+                        className="submit-btn"
                     >
-                        Login
+                        {isLoading ? 'Logging in...' : 'Login'}
                     </button>
                 </Form>
             )}

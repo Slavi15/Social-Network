@@ -10,7 +10,7 @@ export const api = createApi({
         prepareHeaders: (headers, { getState }) => {
             const token = (<RootState>getState()).auth.accessToken;
             if (token) {
-                headers.set('authorization', `Bearer ${token}`);
+                headers.set('Authorization', `Bearer ${token}`);
             }
             return headers;
         }
@@ -30,10 +30,17 @@ export const api = createApi({
                 body: userData,
             }),
         }),
-        logout: builder.mutation<void, void>({
+        logout: builder.mutation<{ success: boolean; message: string }, void>({
             query: () => ({
                 url: '/logout',
+                method: 'POST'
+            }),
+        }),
+        refreshToken: builder.mutation<{ user: IUser; accessToken: string }, void>({
+            query: () => ({
+                url: '/auth/refresh',
                 method: 'POST',
+                credentials: 'include',
             }),
         }),
     }),
@@ -42,5 +49,6 @@ export const api = createApi({
 export const {
     useLoginMutation,
     useRegisterMutation,
-    useLogoutMutation
+    useLogoutMutation,
+    useRefreshTokenMutation
 } = api;

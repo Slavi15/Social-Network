@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../redux/auth/authHooks';
-import LogoutForm from '../components/auth/LogoutForm';
-import styles from "../styles/components/Navbar.module.scss";
+import { useAuth } from '../../redux/auth/authHooks';
+import LogoutForm from '../auth/widgets/LogoutForm';
+import styles from "../../styles/components/Navbar.module.scss";
 
 interface NavbarProps {
     onLoginClick: () => void;
