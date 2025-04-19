@@ -1,16 +1,42 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../redux/auth/authHooks';
-import LogoutForm from '../auth/widgets/LogoutForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import Dropdown from './Dropdown';
+
 import styles from "../../styles/components/Layout/Navbar.module.scss";
 
-interface NavbarProps {
-    onLoginClick: () => void;
-    onRegisterClick: () => void;
-    isAuthenticated: boolean;
-}
-
-const Navbar = ({ onLoginClick, onRegisterClick, isAuthenticated }: NavbarProps) => {
+const Navbar = () => {
     const { user } = useAuth();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const getAvatarURI = (str: string) => {
+        return `data:image/svg+xml;utf8,${encodeURIComponent(str)}`
+    }
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    }
+
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    }
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     return (
         <nav className={styles.navbar}>
@@ -19,44 +45,45 @@ const Navbar = ({ onLoginClick, onRegisterClick, isAuthenticated }: NavbarProps)
                     <Link to="/" className={styles.navbarBrand}>
                         Social Network
                     </Link>
-
-                    {isAuthenticated && (
-                        <>
-                            <Link to="/dashboard" className={styles.navbarLink}>
-                                Dashboard
-                            </Link>
-                            <Link to="/profile" className={styles.navbarLink}>
-                                Profile
-                            </Link>
-                            <Link to="/friends" className={styles.navbarLink}>
-                                Friends
-                            </Link>
-                        </>
-                    )}
                 </div>
 
-                <div className={styles.navbarRight}>
-                    {isAuthenticated ? (
-                        <>
-                            <span className={styles.navbarWelcome}>Welcome, {user?.username}</span>
-                            <LogoutForm />
-                        </>
-                    ) : (
-                        <>
-                            <button
-                                onClick={onLoginClick}
-                                className={styles.loginButton}
-                            >
-                                Login
-                            </button>
-                            <button
-                                onClick={onRegisterClick}
-                                className={styles.registerButton}
-                            >
-                                Register
-                            </button>
-                        </>
-                    )}
+                <div className={`${styles.links} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
+                    <Link
+                        to="/feed"
+                        className={styles.navbarLink}
+                        onClick={() => setIsMobileMenuOpen(false)}>
+                        Feed
+                    </Link>
+                    <Link
+                        to="/events"
+                        className={styles.navbarLink}
+                        onClick={() => setIsMobileMenuOpen(false)}>
+                        Events
+                    </Link>
+                    <Link
+                        to="/friends"
+                        className={styles.navbarLink}
+                        onClick={() => setIsMobileMenuOpen(false)}>
+                        Friends
+                    </Link>
+                </div>
+
+                <div className={styles.navbarRight} ref={dropdownRef}>
+                    <div className={styles.avatarContainer} onClick={toggleDropdown}>
+                        <img
+                            src={getAvatarURI(user?.profile_picture as string)}
+                            alt="Avatar"
+                            className={styles.avatar}
+                        />
+                        {isDropdownOpen && <Dropdown />}
+                    </div>
+                    <button
+                        className={styles.mobileMenuButton}
+                        onClick={toggleMobileMenu}
+                        aria-label="Toggle menu"
+                    >
+                        <FontAwesomeIcon icon={isMobileMenuOpen ? faTimes : faBars} />
+                    </button>
                 </div>
             </div>
         </nav>

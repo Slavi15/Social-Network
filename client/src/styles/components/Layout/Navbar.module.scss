@@ -1,12 +1,126 @@
 .navbar {
-    padding: 1rem;
-}
-
-.navbarContent {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0 auto;
     height: 8vh;
-    max-width: 90%;
+    padding: 1rem;
+    z-index: 100;
+
+    .navbarContent {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 20% 60% 20%;
+        place-items: center;
+        align-items: center;
+        margin: 0 auto;
+
+        .navbarLeft {
+            justify-self: start;
+            padding-left: 1rem;
+
+            .navbarBrand {
+                font-family: "Shadows Into Light", cursive;
+                font-size: 2rem;
+                font-weight: bold;
+                text-decoration: none;
+            }
+        }
+
+        .links {
+            width: 75%;
+            display: grid;
+            grid-template-columns: 33.33% 33.33% 33.33%;
+            place-items: center;
+
+            .navbarLink {
+                text-decoration: none;
+                transition: opacity 0.2s;
+
+                &:hover {
+                    opacity: 0.8;
+                }
+            }
+        }
+
+        .navbarRight {
+            justify-self: end;
+            padding-right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            .avatarContainer {
+                cursor: pointer;
+
+                .avatar {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+            }
+
+            .mobileMenuButton {
+                display: none;
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-size: 1.5rem;
+                color: #333;
+            }
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .navbarContent .navbarLeft .navbarBrand {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 800px) {
+        .navbarContent {
+            grid-template-columns: 50% 50%;
+            
+            .links {
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                top: 8vh;
+                left: 0;
+                width: 100%;
+                height: 90vh;
+                grid-template-columns: 1fr;
+                opacity: 0;
+                pointer-events: none;
+                z-index: 99;
+
+                &.mobileMenuOpen {
+                    opacity: 1;
+                    pointer-events: all;
+                }
+
+                .navbarLink {
+                    padding: 0.5rem 1rem;
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+
+            .navbarRight {
+                .mobileMenuButton {
+                    display: block;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 480px) {
+        .navbarContent {
+            grid-template-columns: 70% 30%;
+
+            .navbarLeft {
+                .navbarBrand {
+                    font-size: 1.5rem;
+                }
+            }
+        }
+    }
 }

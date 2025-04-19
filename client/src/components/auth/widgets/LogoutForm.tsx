@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useLogoutMutation } from '../../../redux/auth/authApi';
 
+import styles from '../../../styles/components/auth/widgets/LogoutForm.module.scss'
+
 const LogoutForm = () => {
     const [logout, { isLoading }] = useLogoutMutation();
     const navigate = useNavigate();
@@ -16,15 +18,13 @@ const LogoutForm = () => {
     };
 
     return (
-        <div className="logout-container">
-            <button
-                onClick={handleLogout}
-                disabled={isLoading}
-                className={`logout-btn ${isLoading ? 'loading' : ''}`}
-            >
-                {isLoading ? 'Logging out...' : 'Logout'}
-            </button>
-        </div>
+        <button
+            onClick={handleLogout}
+            disabled={isLoading}
+            className={`${styles.button} ${isLoading ? styles.loading : ''}`}
+        >
+            {isLoading ? 'Logging out...' : 'Logout'}
+        </button>
     );
 };
 
