@@ -10,6 +10,7 @@ export interface IUser extends Document {
     friends: Types.ObjectId[];
     is_active: boolean;
     comparePassword(candidatePassword: string): Promise<boolean>;
+    getAvatarUrl?: () => string;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -35,10 +36,6 @@ const UserSchema = new Schema<IUser>(
         profile_picture: {
             type: String,
             required: false,
-            validate: {
-                validator: (s: string) => /^https?:\/\/.+\..+$/.test(s) || !s,
-                message: "Invalid profile picture URL!",
-            },
             default: "",
         },
         friends: {
@@ -69,6 +66,10 @@ UserSchema.pre<IUser>("save", async function (next) {
 
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
     return bcrypt.compare(candidatePassword, this.password);
+};
+
+UserSchema.methods.getAvatarUrl = function () {
+    return `data:image/svg+xml;utf8,${encodeURIComponent(this.profile_picture)}`;
 };
 
 export const UserModel = model<IUser>("User", UserSchema);

@@ -3,6 +3,7 @@ import { LoginRequest, LoginResponse } from "@/types/auth/login";
 import { IUser, UserModel } from "@/models/users";
 import { AppError, HttpCode } from "@/exceptions/AppError";
 import { generateAccessToken, generateRefreshToken, setRefreshToken, verifyRefreshToken } from "@/utils/generateTokens";
+import { minidenticon } from 'minidenticons';
 import { RegisterRequest } from "@/types/auth/register";
 import { redisService } from "@/services/tokens";
 import env from "@/lib/env";
@@ -62,7 +63,18 @@ class AuthController {
                 }));
             }
 
-            const newUser = await UserModel.create(req.body);
+            const minidenticonIcon = minidenticon(`${username}:${email}`, 90, 50, (str: string) => {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return hash;
+            });
+
+            const newUser = await UserModel.create({
+                ...req.body,
+                profile_picture: minidenticonIcon
+            });
 
             const accessToken = generateAccessToken(newUser._id.toString());
             await setRefreshToken(res, newUser._id.toString());
