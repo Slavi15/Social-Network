@@ -2,7 +2,7 @@ import { CookieOptions, NextFunction, Request, Response } from "express";
 import { LoginRequest, LoginResponse } from "@/types/auth/login";
 import { IUser, UserModel } from "@/models/users";
 import { AppError, HttpCode } from "@/exceptions/AppError";
-import { generateAccessToken, generateRefreshToken, setRefreshToken } from "@/utils/generateTokens";
+import { generateAccessToken, generateRefreshToken, setRefreshToken, verifyRefreshToken } from "@/utils/generateTokens";
 import { RegisterRequest } from "@/types/auth/register";
 import { redisService } from "@/services/tokens";
 import env from "@/lib/env";
@@ -117,6 +117,70 @@ class AuthController {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: 'Logout failed',
+            }));
+        }
+    };
+
+    public refresh = async (req: Request, res: Response, next: NextFunction) => {
+        const { accessToken, refreshToken } = req.cookies;
+
+        if (!refreshToken) {
+            return next(new AppError({
+                httpCode: HttpCode.UNAUTHORIZED,
+                description: "No refresh token provided",
+            }));
+        }
+
+        try {
+            const decoded = verifyRefreshToken(refreshToken);
+            if (!decoded) {
+                return next(new AppError({
+                    httpCode: HttpCode.BAD_REQUEST,
+                    description: "Invalid refresh token",
+                }));
+            }
+
+            const isBlacklisted = await redisService.isBlacklisted(refreshToken);
+            if (isBlacklisted) {
+                return next(new AppError({
+                    httpCode: HttpCode.BAD_REQUEST,
+                    description: "Refresh token revoked",
+                }));
+            }
+
+            const user = await UserModel.findById(decoded.id).select("-password");
+            if (!user) {
+                return next(new AppError({
+                    httpCode: HttpCode.BAD_REQUEST,
+                    description: "User not found",
+                }));
+            }
+
+            const newAccessToken = generateAccessToken(user._id.toString());
+
+            const newRefreshToken = generateRefreshToken(user._id.toString());
+            setRefreshToken(res, user._id.toString());
+
+            return res.status(HttpCode.OK).json({
+                user: {
+                    id: user._id,
+                    username: user.username,
+                    email: user.email,
+                },
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+            });
+
+        } catch (error) {
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                secure: env.NODE_ENV === "production",
+                sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+            });
+
+            return next(new AppError({
+                httpCode: HttpCode.BAD_REQUEST,
+                description: "Invalid refresh token",
             }));
         }
     };
