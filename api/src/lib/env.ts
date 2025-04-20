@@ -16,6 +16,7 @@ const envSchema = z.object({
     SESSION_SECRET: z.string(),
     JWT_ACCESS_EXPIRES_IN: z.string(),
     JWT_REFRESH_EXPIRES_IN: z.string(),
+    IMGBB_API_KEY: z.string()
 });
 
 type Env = z.infer<typeof envSchema>;

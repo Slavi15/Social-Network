@@ -1,7 +1,7 @@
 import { IPost, Privacy } from "@/models/posts";
 
 export const validatePost = (data: Partial<IPost>, isUpdate = false): string | null => {
-    const { user_id, content, media_url, privacy } = data;
+    const { user_id, content, privacy } = data;
 
     if (!isUpdate) {
         if (!user_id) {

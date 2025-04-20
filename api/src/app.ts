@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import fileUpload from 'express-fileupload';
 import env from "./lib/env.ts";
 import apiRouter from "@/routes/apiRouter.ts";
 
@@ -31,6 +32,13 @@ app.use(express.urlencoded({
 }));
 
 app.use(cookieParser());
+
+app.use(fileUpload({
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+    abortOnLimit: true,
+}));
 
 app.set("json spaces", 4);
 

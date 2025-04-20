@@ -5,6 +5,7 @@ import eventsRouter from "./eventsRouter.ts";
 import friendRequestsRouter from "./friendRequestsRouter.ts";
 import chatRouter from "./chatRouter.ts";
 import authRouter from "./authRouter.ts";
+import uploadRouter from "./uploadRouter.ts";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use("/posts", postsRouter);
 router.use("/events", eventsRouter);
 router.use("/requests", friendRequestsRouter);
 router.use("/chats", chatRouter);
+router.use("/upload", uploadRouter);
 
 export default router;

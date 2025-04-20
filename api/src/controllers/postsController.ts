@@ -18,7 +18,7 @@ class PostController {
                     }
                 });
 
-            res.status(200).json(posts);
+            res.status(HttpCode.OK).json(posts);
         } catch (err) {
             next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -47,7 +47,7 @@ class PostController {
                 }));
             }
 
-            res.status(200).json(post);
+            res.status(HttpCode.OK).json(post);
         } catch (err) {
             next(new AppError({
                 httpCode: HttpCode.BAD_REQUEST,
@@ -58,9 +58,9 @@ class PostController {
 
     public createPost = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { user_id } = req.body;
-            const err = validatePost(req.body);
+            const { user_id, content, privacy } = req.body;
 
+            const err = validatePost(req.body);
             if (err) {
                 return next(new AppError({
                     httpCode: HttpCode.BAD_REQUEST,
@@ -69,7 +69,6 @@ class PostController {
             };
 
             const user = await UserModel.findById(user_id);
-
             if (!user) {
                 return next(new AppError({
                     httpCode: HttpCode.NOT_FOUND,
@@ -77,8 +76,15 @@ class PostController {
                 }));
             };
 
-            const newPost = await PostModel.create(req.body);
-            res.status(201).json(newPost);
+            const newPost = await PostModel.create({
+                user_id,
+                content,
+                privacy,
+                likes: [],
+                comments: []
+            });
+
+            res.status(HttpCode.CREATED).json(newPost);
         } catch (err) {
             console.log(err);
 
@@ -111,7 +117,7 @@ class PostController {
                 }));
             };
 
-            res.status(200).json(updatedPost);
+            res.status(HttpCode.OK).json(updatedPost);
         } catch (error) {
             next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -132,7 +138,7 @@ class PostController {
                 }));
             };
 
-            res.status(200).json({ message: "Post deleted successfully!" });
+            res.status(HttpCode.OK).json({ message: "Post deleted successfully!" });
         } catch (error) {
             next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,

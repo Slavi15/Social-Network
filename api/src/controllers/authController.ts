@@ -178,6 +178,9 @@ class AuthController {
                     id: user._id,
                     username: user.username,
                     email: user.email,
+                    profile_picture: user.profile_picture,
+                    friends: user.friends,
+                    is_active: user.is_active
                 },
                 accessToken: newAccessToken,
                 refreshToken: newRefreshToken,
