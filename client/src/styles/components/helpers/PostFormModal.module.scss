@@ -1,0 +1,32 @@
+.prePost {
+    width: 60%;
+    height: 6vh;
+    margin: 2vh auto;
+    display: grid;
+    grid-template-columns: 70% 30%;
+    align-items: center;
+
+    .postMotto {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #343434;
+    }
+
+    .openModalButton {
+        width: 100%;
+        height: 100%;
+        font-family: 'Lato', sans-serif;
+        background-color: #343434;
+        color: #FFFFFF;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+            color: #343434;
+            background-color: #FFFFFF;
+            border: 1px solid #343434;
+        }
+    }
+}

@@ -3,6 +3,8 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 import authReducer from './auth/authSlice';
 import { api } from './auth/authApi';
+import { postsApi } from './posts/postsApi';
+import { uploadsApi } from './uploads/uploadApi';
 
 const persistConfig = {
     key: 'auth',
@@ -15,6 +17,8 @@ const persistedReducer = persistReducer(persistConfig, authReducer);
 export const store = configureStore({
     reducer: {
         [api.reducerPath]: api.reducer,
+        [postsApi.reducerPath]: postsApi.reducer,
+        [uploadsApi.reducerPath]: uploadsApi.reducer,
         auth: persistedReducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -22,7 +26,10 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-        }).concat(api.middleware),
+        })
+        .concat(api.middleware)
+        .concat(postsApi.middleware)
+        .concat(uploadsApi.middleware),
 });
 
 export const persistor = persistStore(store);

@@ -61,6 +61,12 @@ const Navbar = () => {
                         Events
                     </Link>
                     <Link
+                        to="/chats"
+                        className={styles.navbarLink}
+                        onClick={() => setIsMobileMenuOpen(false)}>
+                        Chats
+                    </Link>
+                    <Link
                         to="/friends"
                         className={styles.navbarLink}
                         onClick={() => setIsMobileMenuOpen(false)}>

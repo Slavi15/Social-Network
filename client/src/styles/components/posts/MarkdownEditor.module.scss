@@ -1,0 +1,58 @@
+.editor {
+    width: 100%;
+
+    .editorOptions {
+        display: grid;
+        grid-template-columns: 33.33% 33.33% 33.33%;
+        place-items: center;
+        width: 100%;
+        height: 8vh;
+        margin: 0 auto;
+
+        .toggleButton {
+            padding: 0 4rem;
+            height: 6vh;
+            font-family: 'Lato', sans-serif;
+            color: #FFFFFF;
+            background-color: #343434;
+            transition: all 0.3s ease;
+            cursor: pointer;
+
+            &:hover {
+                color: #343434;
+                background-color: #FFFFFF;
+                border: 1px solid #343434;
+            }
+        }
+
+        .privacyOptions {
+            padding: 0 4rem;
+            height: 6vh;
+            font-family: 'Lato', sans-serif;
+            border: 1px solid #343434;
+            cursor: pointer;
+
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: none;
+            outline: none;
+        }
+    }
+
+    .editorContent {
+        width: 85%;
+        margin: 1vh auto;
+
+        .mdEditor,
+        .editorPreview {
+            width: 100%;
+            height: 25vh;
+            font-family: 'Lato', sans-serif;
+            font-size: 1rem;
+            border: 1px solid #343434;
+            outline: none;
+            overflow-y: auto;
+        }
+    }
+}

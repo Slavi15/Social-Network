@@ -1,0 +1,28 @@
+.fileUploadContainer {
+    height: 6vh;
+    display: flex;
+    align-items: center;
+
+    .customFileButton {
+        height: 100%;
+        font-family: 'Lato', sans-serif;
+        color: #FFFFFF;
+        padding: 0 3rem;
+        background-color: #343434;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+            color: #343434;
+            background-color: #FFFFFF;
+            border: 1px solid #343434;
+        }
+    }
+
+    .imageInput {
+        display: none;
+    }
+}

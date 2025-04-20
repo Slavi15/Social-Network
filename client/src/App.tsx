@@ -1,10 +1,10 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
-import HomePage from './components/HomePage';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import { useSelector } from 'react-redux';
 import { selectCurrentToken } from './redux/auth/authSlice';
+import Feed from './components/posts/Feed';
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 	const token = useSelector(selectCurrentToken);
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
 		path: '/',
 		element: (
 			<AuthGuard>
-				<HomePage />
+				<Feed />
 			</AuthGuard>
 		)
 	},

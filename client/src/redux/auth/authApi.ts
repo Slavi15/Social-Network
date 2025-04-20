@@ -4,6 +4,7 @@ import type { LoginRequest, RegisterRequest } from '../types/auth';
 import type { RootState } from '../store';
 
 export const api = createApi({
+    reducerPath: 'api',
     baseQuery: fetchBaseQuery({
         baseUrl: `${import.meta.env.VITE_API_BASE_URL}/auth`,
         credentials: 'include',
@@ -38,7 +39,7 @@ export const api = createApi({
         }),
         refreshToken: builder.mutation<{ user: IUser; accessToken: string }, void>({
             query: () => ({
-                url: '/auth/refresh',
+                url: '/refresh',
                 method: 'POST',
                 credentials: 'include',
             }),
