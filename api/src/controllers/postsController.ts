@@ -3,6 +3,13 @@ import { PostModel } from "@/models/posts.ts";
 import { UserModel } from "@/models/users.ts";
 import { validatePost } from "@/validators/postsValidator.ts";
 import { AppError, HttpCode } from "@/exceptions/AppError.ts";
+import { Types } from "mongoose";
+
+export enum Privacy {
+    PUBLIC = 0b001,
+    FRIENDS = 0b010,
+    PRIVATE = 0b100,
+};
 
 class PostController {
 
@@ -25,6 +32,44 @@ class PostController {
                 description: "Failed to fetch posts!"
             }));
         };
+    };
+
+    public getVisiblePosts = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { user_id } = req.params;
+            const user = await UserModel.findById(user_id);
+
+            if (!user) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "User not found!"
+                }));
+            }
+
+            const posts = await PostModel.find({
+                $or: [
+                    { privacy: Privacy.PUBLIC },
+                    {
+                        privacy: Privacy.FRIENDS,
+                        user_id: { $in: user.friends }
+                    },
+                    { user_id }
+                ]
+            })
+                .sort({ createdAt: -1 })
+                .populate("user_id", "username profile_picture")
+                .populate({
+                    path: "comments.user_id",
+                    select: "username profile_picture"
+                });
+
+            res.status(HttpCode.OK).json(posts);
+        } catch (err) {
+            next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Failed to fetch visible posts!"
+            }));
+        }
     };
 
     public getPost = async (req: Request, res: Response, next: NextFunction) => {
@@ -145,6 +190,72 @@ class PostController {
                 description: "Error deleting post!"
             }));
         };
+    };
+
+    public likePost = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { postId } = req.params;
+            const { userId } = req.body;
+
+            const post = await PostModel.findById(postId);
+            if (!post) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "Post not found!"
+                }));
+            }
+
+            const likeIndex = post.likes.indexOf(userId);
+            if (likeIndex === -1) {
+                post.likes.push(userId);
+            } else {
+                post.likes.splice(likeIndex, 1);
+            }
+
+            await post.save();
+            res.status(HttpCode.OK).json(post);
+        } catch (error) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Error updating likes!"
+            }));
+        }
+    };
+
+    public addComment = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { postId } = req.params;
+            const { userId, content } = req.body;
+
+            const post = await PostModel.findById(postId);
+            if (!post) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "Post not found!"
+                }));
+            }
+
+            const comment = {
+                user_id: userId,
+                content,
+                _id: new Types.ObjectId()
+            };
+
+            post.comments.push(comment);
+            await post.save();
+
+            const populatedPost = await PostModel.populate(post, {
+                path: 'comments.user_id',
+                select: 'username profile_picture'
+            });
+
+            res.status(HttpCode.OK).json(populatedPost);
+        } catch (error) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Error adding comment!"
+            }));
+        }
     };
 };
 
