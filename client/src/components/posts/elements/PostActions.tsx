@@ -1,4 +1,7 @@
 import { FC } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbsUp as farThumbsUp } from '@fortawesome/free-regular-svg-icons';
+import { faThumbsUp as fasThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import styles from '../../../styles/components/posts/Post.module.scss';
 
 interface PostActionsProps {
@@ -20,9 +23,13 @@ const PostActions: FC<PostActionsProps> = ({
         <div className={styles.postActions}>
             <button
                 onClick={onLike}
-                className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}
+                className={styles.actionButton}
             >
-                <span className={styles.icon}>Likes</span>
+                {isLiked ? (
+                    <FontAwesomeIcon icon={fasThumbsUp} />
+                ) : (
+                    <FontAwesomeIcon icon={farThumbsUp} />
+                )}
                 <span className={styles.count}>{likeCount}</span>
             </button>
 

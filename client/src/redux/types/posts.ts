@@ -12,6 +12,11 @@ export interface IPost {
         profile_picture: string;
     };
     content: string;
+    media: {
+        url: string;
+        delete_url: string;
+        filename: string;
+    };
     likes: string[];
     comments: {
         _id: string;

@@ -2,12 +2,10 @@ import { useUploadImageMutation } from '../../redux/uploads/uploadApi';
 import styles from '../../styles/components/posts/ImageUpload.module.scss';
 
 interface ImageUploadProps {
-    values: { content: string };
-    setFieldValue: (field: string, value: any) => void;
-    name: string;
+    onUploadSuccess: (filename: string, url: string, deleteUrl: string) => void;
 }
 
-const ImageUpload = ({ values, setFieldValue, name }: ImageUploadProps) => {
+const ImageUpload = ({ onUploadSuccess }: ImageUploadProps) => {
     const [uploadImage] = useUploadImageMutation();
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,8 +17,7 @@ const ImageUpload = ({ values, setFieldValue, name }: ImageUploadProps) => {
 
         try {
             const response = await uploadImage(formData).unwrap();
-            const imageMarkdown = `![${file.name}](${response.url})`;
-            setFieldValue(name, `${values.content}\n${imageMarkdown}\n`);
+            onUploadSuccess(file.name, response.url, response.delete_url);
         } catch (error) {
             console.error('Upload failed:', error);
         }
@@ -34,9 +31,8 @@ const ImageUpload = ({ values, setFieldValue, name }: ImageUploadProps) => {
                 onChange={handleImageUpload}
                 id="file-upload"
                 className={styles.imageInput}
-                style={{ display: 'none' }}
             />
-            
+
             <label htmlFor="file-upload" className={styles.customFileButton}>
                 Select image
             </label>

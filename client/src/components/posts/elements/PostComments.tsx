@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+import PostComment from './PostComment';
 import styles from '../../../styles/components/posts/Post.module.scss';
 
 interface Comment {
@@ -15,14 +16,11 @@ interface Comment {
 interface PostCommentsProps {
     comments: Comment[];
     onAddComment: (content: string) => void;
+    postId: string;
 }
 
-const PostComments: FC<PostCommentsProps> = ({ comments, onAddComment }) => {
+const PostComments: FC<PostCommentsProps> = ({ comments, onAddComment, postId }) => {
     const [commentText, setCommentText] = useState('');
-
-    const getAvatarURI = (str: string) => {
-        return `data:image/svg+xml;utf8,${encodeURIComponent(str)}`
-    }
 
     const handleSubmit = () => {
         onAddComment(commentText);
@@ -50,22 +48,7 @@ const PostComments: FC<PostCommentsProps> = ({ comments, onAddComment }) => {
             <div className={styles.commentsList}>
                 {comments.length > 0 ? (
                     comments.map((comment) => (
-                        <div key={comment._id} className={styles.comment}>
-                            <img
-                                src={getAvatarURI(comment.user_id.profile_picture || '')}
-                                alt={comment.user_id.username}
-                                className={styles.commentAvatar}
-                            />
-                            <div className={styles.commentContent}>
-                                <div className={styles.commentHeader}>
-                                    <strong>{comment.user_id.username}</strong>
-                                    <time dateTime={comment.createdAt}>
-                                        {new Date(comment.createdAt).toLocaleString()}
-                                    </time>
-                                </div>
-                                <p>{comment.content}</p>
-                            </div>
-                        </div>
+                        <PostComment key={comment._id} comment={comment} postId={postId} />
                     ))
                 ) : (
                     <p className={styles.noComments}>No comments yet</p>

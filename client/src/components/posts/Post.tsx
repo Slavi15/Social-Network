@@ -12,6 +12,7 @@ const Post: FC<IPost> = ({
     _id,
     user_id,
     content,
+    media,
     likes,
     comments,
     privacy,
@@ -56,7 +57,7 @@ const Post: FC<IPost> = ({
                 createdAt={createdAt}
             />
 
-            <PostContent content={content} />
+            <PostContent content={content} media={media} />
 
             <PostActions
                 isLiked={isLiked}
@@ -70,6 +71,7 @@ const Post: FC<IPost> = ({
                 <PostComments
                     comments={comments}
                     onAddComment={handleAddComment}
+                    postId={_id}
                 />
             )}
         </article>

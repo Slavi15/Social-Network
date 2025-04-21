@@ -6,9 +6,16 @@ import { useAuth } from '../../redux/auth/authHooks';
 import { Privacy } from '../../redux/types/posts';
 import styles from "../../styles/components/posts/PostForm.module.scss";
 
+interface MediaProps {
+    url: string;
+    delete_url: string;
+    filename: string;
+}
+
 interface PostProps {
     user_id: string;
     content: string;
+    media: MediaProps | null;
     privacy: Privacy;
 }
 
@@ -23,14 +30,16 @@ const PostForm = ({ onSuccess }: PostFormProps) => {
     const initialValues: PostProps = {
         user_id: user?.id || '',
         content: '',
+        media: null,
         privacy: Privacy.FRIENDS,
     };
 
     const validationSchema = Yup.object().shape({
         user_id: Yup.string().required('User ID is required'),
         content: Yup.string()
-            .required('Content is required')
-            .max(200, 'Content must be 200 characters or less'),
+            .max(250, 'Content must be 200 characters or less')
+            .required('Content is required'),
+        media: Yup.object().nullable(),
         privacy: Yup.number()
             .oneOf([Privacy.PUBLIC, Privacy.FRIENDS, Privacy.PRIVATE])
             .required('Privacy setting is required'),
@@ -54,9 +63,9 @@ const PostForm = ({ onSuccess }: PostFormProps) => {
                 onSubmit={handleSubmit}
                 enableReinitialize={true}
             >
-                {({ isSubmitting, isValid }) => (
+                {({ values, isSubmitting, isValid }) => (
                     <Form className={styles.form}>
-                        <MarkdownEditor name="content" />
+                        <MarkdownEditor name="content" media={values.media} />
 
                         <button
                             type="submit"

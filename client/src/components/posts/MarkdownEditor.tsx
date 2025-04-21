@@ -6,17 +6,36 @@ import ImageUpload from './ImageUpload';
 import { Privacy } from '../../redux/types/posts';
 import styles from '../../styles/components/posts/MarkdownEditor.module.scss';
 
-interface MarkdownEditorProps {
-    name: string;
+interface MediaProps {
+    url: string;
+    delete_url: string;
+    filename: string;
 }
 
-const MarkdownEditor = ({ name }: MarkdownEditorProps) => {
+interface MarkdownEditorProps {
+    name: string;
+    media: MediaProps | null;
+}
+
+const MarkdownEditor = ({ name, media }: MarkdownEditorProps) => {
     const { values, setFieldValue } = useFormikContext<{
         content: string;
         privacy: Privacy;
+        media: MediaProps | null;
     }>();
 
     const [isPreview, setIsPreview] = useState(false);
+    const [uploadedMedia, setUploadedMedia] = useState<MediaProps | null>(media);
+
+    const handleUploadSuccess = (filename: string, url: string, delete_url: string) => {
+        const mediaData = {
+            url,
+            delete_url,
+            filename
+        };
+        setUploadedMedia(mediaData);
+        setFieldValue('media', mediaData);
+    };
 
     return (
         <div className={styles.editor}>
@@ -30,9 +49,7 @@ const MarkdownEditor = ({ name }: MarkdownEditorProps) => {
                 </button>
 
                 <ImageUpload
-                    values={values}
-                    setFieldValue={setFieldValue}
-                    name={name}
+                    onUploadSuccess={handleUploadSuccess}
                 />
 
                 <select
@@ -46,6 +63,12 @@ const MarkdownEditor = ({ name }: MarkdownEditorProps) => {
                     <option value={Privacy.PRIVATE}>Private</option>
                 </select>
             </div>
+
+            {uploadedMedia && (
+                <div className={styles.uploadedFilename}>
+                    {uploadedMedia.filename}
+                </div>
+            )}
 
             <div className={styles.editorContent}>
                 {isPreview ? (
@@ -63,6 +86,6 @@ const MarkdownEditor = ({ name }: MarkdownEditorProps) => {
             </div>
         </div>
     );
-}
+};
 
 export default MarkdownEditor;
