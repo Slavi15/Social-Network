@@ -1,4 +1,5 @@
 import { CookieOptions, NextFunction, Request, Response } from "express";
+import jwt from 'jsonwebtoken'
 import { LoginRequest, LoginResponse } from "@/types/auth/login";
 import { IUser, UserModel } from "@/models/users";
 import { AppError, HttpCode } from "@/exceptions/AppError";
@@ -134,7 +135,7 @@ class AuthController {
     };
 
     public refresh = async (req: Request, res: Response, next: NextFunction) => {
-        const { accessToken, refreshToken } = req.cookies;
+        const { refreshToken } = req.cookies;
 
         if (!refreshToken) {
             return next(new AppError({
@@ -144,18 +145,17 @@ class AuthController {
         }
 
         try {
-            const decoded = verifyRefreshToken(refreshToken);
-            if (!decoded) {
-                return next(new AppError({
-                    httpCode: HttpCode.BAD_REQUEST,
-                    description: "Invalid refresh token",
-                }));
-            }
+            const decoded = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET) as { id: string };
 
             const isBlacklisted = await redisService.isBlacklisted(refreshToken);
             if (isBlacklisted) {
+                res.clearCookie("refreshToken", {
+                    httpOnly: true,
+                    secure: env.NODE_ENV === "production",
+                    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+                });
                 return next(new AppError({
-                    httpCode: HttpCode.BAD_REQUEST,
+                    httpCode: HttpCode.UNAUTHORIZED,
                     description: "Refresh token revoked",
                 }));
             }
@@ -163,15 +163,22 @@ class AuthController {
             const user = await UserModel.findById(decoded.id).select("-password");
             if (!user) {
                 return next(new AppError({
-                    httpCode: HttpCode.BAD_REQUEST,
+                    httpCode: HttpCode.NOT_FOUND,
                     description: "User not found",
                 }));
             }
 
             const newAccessToken = generateAccessToken(user._id.toString());
-
             const newRefreshToken = generateRefreshToken(user._id.toString());
-            setRefreshToken(res, user._id.toString());
+
+            await redisService.addToBlacklist(refreshToken);
+
+            res.cookie("refreshToken", newRefreshToken, {
+                httpOnly: true,
+                secure: env.NODE_ENV === "production",
+                sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
 
             return res.status(HttpCode.OK).json({
                 user: {
@@ -183,7 +190,6 @@ class AuthController {
                     is_active: user.is_active
                 },
                 accessToken: newAccessToken,
-                refreshToken: newRefreshToken,
             });
 
         } catch (error) {
@@ -193,9 +199,23 @@ class AuthController {
                 sameSite: env.NODE_ENV === "production" ? "none" : "lax",
             });
 
+            if (error instanceof jwt.TokenExpiredError) {
+                return next(new AppError({
+                    httpCode: HttpCode.UNAUTHORIZED,
+                    description: "Refresh token expired",
+                }));
+            }
+
+            if (error instanceof jwt.JsonWebTokenError) {
+                return next(new AppError({
+                    httpCode: HttpCode.UNAUTHORIZED,
+                    description: "Invalid refresh token",
+                }));
+            }
+
             return next(new AppError({
-                httpCode: HttpCode.BAD_REQUEST,
-                description: "Invalid refresh token",
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Error refreshing token",
             }));
         }
     };
