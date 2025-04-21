@@ -2,9 +2,9 @@ import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useFormikContext } from 'formik';
-import { Privacy } from './PostForm';
-import styles from '../../styles/components/posts/MarkdownEditor.module.scss';
 import ImageUpload from './ImageUpload';
+import { Privacy } from '../../redux/types/posts';
+import styles from '../../styles/components/posts/MarkdownEditor.module.scss';
 
 interface MarkdownEditorProps {
     name: string;

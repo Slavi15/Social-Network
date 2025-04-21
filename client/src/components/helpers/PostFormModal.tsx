@@ -8,15 +8,12 @@ const PostFormModal = () => {
 
     return (
         <>
-            <div className={styles.prePost}>
-                <div className={styles.postMotto}>What's on your mind?</div>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className={styles.openModalButton}
-                >
-                    Post
-                </button>
-            </div>
+            <button
+                onClick={() => setIsModalOpen(true)}
+                className={styles.postModalButton}
+            >
+                Post
+            </button>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <PostForm onSuccess={() => setIsModalOpen(false)} />

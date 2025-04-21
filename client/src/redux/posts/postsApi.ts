@@ -19,6 +19,13 @@ export const postsApi = createApi({
             query: () => '',
             providesTags: ['Posts'],
         }),
+        getVisiblePosts: builder.query({
+            query: (userId) => ({
+                url: `/visible/${userId}`,
+                method: 'GET'
+            }),
+            providesTags: ['Posts'],
+        }),
         getPost: builder.query({
             query: (postId) => `/${postId}`,
             providesTags: (_result, _error, arg) => [{ type: 'Posts', id: arg }],
@@ -46,13 +53,32 @@ export const postsApi = createApi({
             }),
             invalidatesTags: (_result, _error, arg) => [{ type: 'Posts', id: arg }],
         }),
+        likePost: builder.mutation({
+            query: ({ postId, userId }) => ({
+                url: `/${postId}/like`,
+                method: 'POST',
+                body: { userId }
+            }),
+            invalidatesTags: ['Posts'],
+        }),
+        addComment: builder.mutation({
+            query: ({ postId, userId, content }) => ({
+                url: `/${postId}/comments`,
+                method: 'POST',
+                body: { userId, content }
+            }),
+            invalidatesTags: ['Posts'],
+        }),
     }),
 });
 
 export const {
     useGetPostsQuery,
+    useGetVisiblePostsQuery,
     useGetPostQuery,
     useCreatePostMutation,
     useUpdatePostMutation,
     useDeletePostMutation,
+    useLikePostMutation,
+    useAddCommentMutation
 } = postsApi;

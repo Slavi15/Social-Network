@@ -3,13 +3,8 @@ import * as Yup from 'yup';
 import { useCreatePostMutation } from '../../redux/posts/postsApi';
 import MarkdownEditor from './MarkdownEditor';
 import { useAuth } from '../../redux/auth/authHooks';
+import { Privacy } from '../../redux/types/posts';
 import styles from "../../styles/components/posts/PostForm.module.scss";
-
-export enum Privacy {
-    PUBLIC = 0b001,
-    FRIENDS = 0b010,
-    PRIVATE = 0b100,
-};
 
 interface PostProps {
     user_id: string;
