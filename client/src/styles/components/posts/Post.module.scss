@@ -140,7 +140,7 @@
                 display: grid;
                 grid-template-rows: 20% 60% 20%;
                 align-items: center;
-                height: 20vh;
+                max-height: 20vh;
                 width: 95%;
                 margin: 4vh auto;
                 padding: 1rem;
@@ -191,6 +191,8 @@
                     display: grid;
                     grid-template-columns: 50% 50%;
                     place-items: center;
+                    min-height: 0;
+                    max-height: 5vh;
 
                     .commentActionButton {
                         font-family: 'Lato', sans-serif;

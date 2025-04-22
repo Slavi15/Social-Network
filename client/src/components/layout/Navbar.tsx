@@ -6,16 +6,13 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Dropdown from './Dropdown';
 
 import styles from "../../styles/components/Layout/Navbar.module.scss";
+import ProfilePicture, { ImageSize } from '../profile/ProfilePicture';
 
 const Navbar = () => {
     const { user } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-
-    const getAvatarURI = (str: string) => {
-        return `data:image/svg+xml;utf8,${encodeURIComponent(str)}`
-    }
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -49,7 +46,7 @@ const Navbar = () => {
 
                 <div className={`${styles.links} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
                     <Link
-                        to="/feed"
+                        to="/"
                         className={styles.navbarLink}
                         onClick={() => setIsMobileMenuOpen(false)}>
                         Feed
@@ -76,11 +73,12 @@ const Navbar = () => {
 
                 <div className={styles.navbarRight} ref={dropdownRef}>
                     <div className={styles.avatarContainer} onClick={toggleDropdown}>
-                        <img
-                            src={getAvatarURI(user?.profile_picture as string)}
-                            alt="Avatar"
-                            className={styles.avatar}
-                        />
+                        <ProfilePicture
+                            userId={user?.id as string}
+                            username={user?.username as string}
+                            profilePicture={user?.profile_picture as string}
+                            size={ImageSize.SMALL}
+                            linkToProfile={false} />
                         {isDropdownOpen && <Dropdown />}
                     </div>
                     <button

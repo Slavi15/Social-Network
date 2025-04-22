@@ -19,6 +19,13 @@ export const postsApi = createApi({
             query: () => '',
             providesTags: ['Posts'],
         }),
+        getUserPosts: builder.query({
+            query: (userId) => ({
+                url: `/${userId}`,
+                method: 'GET'
+            }),
+            providesTags: ['Posts'],
+        }),
         getVisiblePosts: builder.query({
             query: (userId) => ({
                 url: `/visible/${userId}`,
@@ -89,6 +96,7 @@ export const postsApi = createApi({
 
 export const {
     useGetPostsQuery,
+    useGetUserPostsQuery,
     useGetVisiblePostsQuery,
     useGetPostQuery,
     useCreatePostMutation,

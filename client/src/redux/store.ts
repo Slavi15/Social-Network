@@ -5,6 +5,7 @@ import authReducer from './auth/authSlice';
 import { api } from './auth/authApi';
 import { postsApi } from './posts/postsApi';
 import { uploadsApi } from './uploads/uploadApi';
+import { usersApi } from './users/usersApi';
 
 const persistConfig = {
     key: 'auth',
@@ -18,6 +19,7 @@ export const store = configureStore({
     reducer: {
         [api.reducerPath]: api.reducer,
         [postsApi.reducerPath]: postsApi.reducer,
+        [usersApi.reducerPath]: usersApi.reducer,
         [uploadsApi.reducerPath]: uploadsApi.reducer,
         auth: persistedReducer,
     },
@@ -29,6 +31,7 @@ export const store = configureStore({
         })
         .concat(api.middleware)
         .concat(postsApi.middleware)
+        .concat(usersApi.middleware)
         .concat(uploadsApi.middleware),
 });
 

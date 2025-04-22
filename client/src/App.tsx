@@ -5,6 +5,7 @@ import RegisterPage from './components/auth/RegisterPage';
 import { useSelector } from 'react-redux';
 import { selectCurrentToken } from './redux/auth/authSlice';
 import Feed from './components/posts/Feed';
+import ProfilePage from './components/profile/ProfilePage';
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 	const token = useSelector(selectCurrentToken);
@@ -22,6 +23,14 @@ const router = createBrowserRouter([
 		element: (
 			<AuthGuard>
 				<Feed />
+			</AuthGuard>
+		)
+	},
+	{
+		path: '/profile/:userId',
+		element: (
+			<AuthGuard>
+				<ProfilePage />
 			</AuthGuard>
 		)
 	},

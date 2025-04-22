@@ -1,12 +1,18 @@
-import { useGetVisiblePostsQuery } from '../../redux/posts/postsApi';
 import Post from './Post';
-import { useAuth } from '../../redux/auth/authHooks';
-import { IPost } from '../../redux/types/posts';
 import styles from '../../styles/components/posts/Posts.module.scss';
+import { IPost } from '../../redux/types/posts';
 
-const Posts = () => {
-    const { user } = useAuth();
-    const { data: posts, isLoading, error } = useGetVisiblePostsQuery(user?.id || '');
+interface PostsProps {
+    getPosts: (userId: string) => {
+        data?: IPost[];
+        isLoading: boolean;
+        error?: any;
+    };
+    userId: string;
+}
+
+const Posts = ({ getPosts, userId }: PostsProps) => {
+    const { data: posts, isLoading, error } = getPosts(userId);
 
     if (isLoading) return <div className={styles.loading}>Loading posts...</div>;
     if (error) return <div className={styles.error}>Error loading posts</div>;

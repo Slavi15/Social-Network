@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { Privacy } from '../../../redux/types/posts';
+import ProfilePicture, { ImageSize } from '../../profile/ProfilePicture';
 import styles from '../../../styles/components/posts/Post.module.scss';
 
 interface PostHeaderProps {
@@ -12,19 +13,20 @@ interface PostHeaderProps {
     createdAt: string;
 }
 
-const PostHeader: FC<PostHeaderProps> = ({ user_id, privacy, createdAt }) => {
-    const getAvatarURI = (str: string) => {
-        return `data:image/svg+xml;utf8,${encodeURIComponent(str)}`
-    }
-
+const PostHeader: FC<PostHeaderProps> = ({ 
+    user_id, 
+    privacy, 
+    createdAt 
+}) => {
     return (
         <header className={styles.postHeader}>
             <div className={styles.userInfo}>
-                <img
-                    src={getAvatarURI(user_id.profile_picture as string)}
-                    alt={user_id.username}
-                    className={styles.profile_picture}
-                />
+                <ProfilePicture
+                    userId={user_id._id as string}
+                    username={user_id.username}
+                    profilePicture={user_id.profile_picture as string}
+                    size={ImageSize.SMALL}
+                    linkToProfile={true} />
 
                 <div className={styles.userDetails}>
                     <h3>{user_id.username}</h3>
@@ -34,7 +36,7 @@ const PostHeader: FC<PostHeaderProps> = ({ user_id, privacy, createdAt }) => {
                     <time dateTime={createdAt}>
                         {new Date(createdAt).toLocaleString()}
                     </time>
-                    
+
                     <span className={styles.privacy}>
                         {privacy === Privacy.PUBLIC ? 'Public' :
                             privacy === Privacy.FRIENDS ? 'Friends' : 'Private'}
