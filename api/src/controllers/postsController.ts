@@ -38,6 +38,33 @@ class PostController {
         };
     };
 
+    public getUserPosts = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { user_id } = req.params;
+
+            const posts = await PostModel.find({ user_id })
+                .populate("user_id", "username email profile_picture friends")
+                .populate({
+                    path: "comments",
+                    populate: {
+                        path: "user_id",
+                        select: "username email profile_picture"
+                    },
+                    options: {
+                        sort: { createdAt: -1 }
+                    }
+                })
+                .sort({ createdAt: -1 });
+
+            res.status(HttpCode.OK).json(posts);
+        } catch (err) {
+            next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Failed to fetch user posts!"
+            }));
+        }
+    };
+
     public getVisiblePosts = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { user_id } = req.params;
