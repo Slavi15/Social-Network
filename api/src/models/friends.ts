@@ -1,9 +1,9 @@
 import { Schema, Types, Document, model } from "mongoose";
 
 export enum FriendRequestStatus {
-    PENDING = "pending",
-    ACCEPTED = "accepted",
-    REJECTED = "rejected",
+    PENDING = "PENDING",
+    ACCEPTED = "ACCEPTED",
+    REJECTED = "REJECTED",
 }
 
 export interface IFriendRequest extends Document {
@@ -16,12 +16,10 @@ const FriendRequestSchema = new Schema<IFriendRequest>(
     {
         sender: {
             type: Schema.Types.ObjectId,
-            ref: "User",
             required: true,
         },
         receiver: {
             type: Schema.Types.ObjectId,
-            ref: "User",
             required: true,
         },
         status: {

@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { UserModel } from "@/models/users.ts";
 import { validateUser } from "@/validators/usersValidator.ts";
@@ -7,10 +8,10 @@ class UserController {
 
     public getUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const users = await UserModel.find().populate("friends", "username email");
+            const users = await UserModel.find().populate("friends", "username email profile_picture friends");
             res.status(200).json(users);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Could not fetch users!"
             }));
@@ -20,7 +21,7 @@ class UserController {
     public getUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { user_id } = req.params;
-            const user = await UserModel.findById(user_id).populate("friends", "username email");
+            const user = await UserModel.findById(user_id).populate("friends", "username email profile_picture friends");
 
             if (!user) {
                 return next(new AppError({
@@ -31,11 +32,67 @@ class UserController {
 
             res.status(200).json(user);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: "Invalid user ID!"
             }));
         };
+    };
+
+    public getMutualFriends = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { userId } = req.params;
+
+            if (!userId || !Types.ObjectId.isValid(userId)) {
+                return next(new AppError({
+                    httpCode: HttpCode.BAD_REQUEST,
+                    description: "Invalid user ID provided!"
+                }));
+            }
+
+            const currentUser = await UserModel.findById(userId).select('friends');
+            if (!currentUser) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "Current user not found!"
+                }));
+            }
+
+            const potentialConnections = await UserModel.find({
+                _id: {
+                    $ne: userId,
+                    $nin: currentUser.friends
+                }
+            }).select('username profile_picture friends');
+
+            const currentUserFriendIds = new Set(currentUser.friends.map(id => id.toString()));
+
+            const results = await Promise.all(
+                potentialConnections.map(async (user) => {
+                    const userFriendIds = new Set(user.friends.map(id => id.toString()));
+                    const mutualCount = [...currentUserFriendIds].filter(id => userFriendIds.has(id)).length;
+
+                    if (mutualCount > 0) {
+                        return {
+                            userId: user._id,
+                            username: user.username,
+                            profile_picture: user.profile_picture,
+                            mutualCount
+                        };
+                    }
+
+                    return null;
+                })
+            );
+
+            const connections = results.filter(Boolean);
+            res.status(200).json(connections);
+        } catch (err) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Could not fetch mutual friends!"
+            }));
+        }
     };
 
     public updateUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -61,7 +118,7 @@ class UserController {
 
             res.status(200).json(updatedUser);
         } catch (err) {
-            next(new AppError({
+            return next(new AppError({
                 httpCode: HttpCode.BAD_REQUEST,
                 description: "Invalid user ID!",
             }));
@@ -88,7 +145,7 @@ class UserController {
             }));
         };
     };
-    
+
 };
 
 export const usersController = new UserController();

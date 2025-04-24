@@ -8,4 +8,6 @@ userRouter.get("/:user_id", usersController.getUser);
 userRouter.put("/:user_id", usersController.updateUser);
 userRouter.delete("/:user_id", usersController.deleteUser);
 
+userRouter.get("/mutuals/:userId", usersController.getMutualFriends);
+
 export default userRouter;
