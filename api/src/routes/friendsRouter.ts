@@ -3,6 +3,7 @@ import { friendRequestController } from "@/controllers/friendsController";
 
 const friendRequestsRouter = Router();
 
+friendRequestsRouter.get("/pending", friendRequestController.getRequests);
 friendRequestsRouter.get("/pending/:userId", friendRequestController.getPendingRequests);
 
 friendRequestsRouter.post("/send", friendRequestController.sendRequest);

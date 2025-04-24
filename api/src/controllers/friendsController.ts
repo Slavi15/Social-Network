@@ -5,6 +5,18 @@ import { AppError, HttpCode } from "@/exceptions/AppError.ts";
 
 class FriendRequestController {
 
+    public getRequests = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const requests = await FriendRequestModel.find();
+            res.status(HttpCode.OK).json(requests);
+        } catch (err) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Failed to fetch friend requests",
+            }))
+        }
+    }
+
     public getPendingRequests = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { userId } = req.params;
