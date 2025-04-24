@@ -43,6 +43,41 @@
             }
         }
     }
+
+    .connection {
+        display: grid;
+        grid-template-columns: 20% 50% 30%;
+        place-items: center;
+        width: 90%;
+        height: 15vh;
+        margin: 2vh auto;
+        border-radius: 20px;
+        background-color: #FAFAFA;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+        .connInfo {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 50% 50%;
+            align-items: center;
+            justify-self: start;
+        }
+
+        .addButton {
+            width: 60%;
+            height: 6vh;
+            color: #FFFFFF;
+            background-color: #343434;
+            transition: all 0.3s ease;
+            cursor: pointer;
+
+            &:hover {
+                color: #343434;
+                background-color: #FFFFFF;
+                border: 1px solid #343434;
+            }
+        }
+    }
 }
 
 .empty {

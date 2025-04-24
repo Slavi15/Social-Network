@@ -17,6 +17,12 @@ export const friendsApi = createApi({
     }),
     tagTypes: ['FriendRequest', 'User'],
     endpoints: (builder) => ({
+        getRequests: builder.query<IFriendRequest[], void>({
+            query: () => ({
+                url: '/pending',
+                method: 'GET'
+            })
+        }),
         getPending: builder.query<IFriendRequest[], string>({
             query: (userId) => ({
                 url: `/pending/${userId}`,
@@ -73,6 +79,7 @@ export const friendsApi = createApi({
 });
 
 export const {
+    useGetRequestsQuery,
     useGetPendingQuery,
     useSendRequestMutation,
     useCancelRequestMutation,

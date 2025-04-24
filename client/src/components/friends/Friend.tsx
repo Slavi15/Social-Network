@@ -1,10 +1,10 @@
 import { IFriendRequest } from "../../redux/types/friendRequests";
 import FriendRequest from "./FriendRequest";
 import { useGetMutualFriendsQuery, useGetUserQuery } from "../../redux/users/usersApi";
-import { useGetPendingQuery } from "../../redux/friends/friendsApi";
-import styles from '../../styles/components/friends/Friends.module.scss'
+import { useGetPendingQuery, useGetRequestsQuery } from "../../redux/friends/friendsApi";
 import FriendConnection from "./FriendConnection";
 import { IConnection } from "../../redux/types/users";
+import styles from '../../styles/components/friends/Friends.module.scss'
 
 interface FriendProps {
     userId: string;
@@ -24,6 +24,7 @@ type FriendComponentProps = PendingProps | MutualProps;
 
 const Friend = ({ userId, isPending, getData }: FriendComponentProps) => {
     const { data, isLoading, error } = getData(userId);
+    const { data: requests } = useGetRequestsQuery();
 
     if (isLoading) return <div className={styles.loading}>Loading...</div>;
     if (error) return <div className={styles.error}>Error loading!</div>;
@@ -42,12 +43,14 @@ const Friend = ({ userId, isPending, getData }: FriendComponentProps) => {
                         key={request._id as string}
                         request={request}
                         getUser={(senderId: string) => useGetUserQuery(senderId as string)} />
-                )) : 
-                data.map((connection: IConnection) => (
-                    <FriendConnection
-                        key={connection.userId as string}
-                        connection={connection} />
-                ))
+                )) :
+                data
+                    .filter((connection: IConnection) => requests && !requests.find(req => req.receiver === connection.userId || req.sender === connection.userId))
+                    .map((connection: IConnection) => (
+                        <FriendConnection
+                            key={connection.userId as string}
+                            connection={connection} />
+                    ))
             }
         </div>
     )

@@ -213,6 +213,10 @@
     }
 }
 
+.loading, .error, .empty {
+    text-align: center;
+}
+
 @media (max-width: 768px) {
     .postMedia {
         max-height: 400px;

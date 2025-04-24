@@ -58,6 +58,10 @@
     }
 }
 
+.loading, .error, .empty {
+    text-align: center;
+}
+
 .profilePicture {
     border-radius: 50%;
     overflow: hidden;
