@@ -77,6 +77,7 @@ class UserController {
                             userId: user._id,
                             username: user.username,
                             profile_picture: user.profile_picture,
+                            friends: user.friends,
                             mutualCount
                         };
                     }
