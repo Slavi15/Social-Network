@@ -1,50 +1,98 @@
-import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from "../../redux/auth/authHooks";
 import { useGetUserPostsQuery } from "../../redux/posts/postsApi";
 import { useGetUserQuery } from '../../redux/users/usersApi';
 import Posts from "../posts/Posts";
-import Profile from "./Profile";
+import Profile, { FriendStatus } from "./Profile";
+import { useCancelRequestMutation, useCheckRequestStatusQuery, useSendRequestMutation, useUnfriendMutation } from '../../redux/friends/friendsApi';
 import styles from '../../styles/components/profile/ProfilePage.module.scss'
 
 const ProfilePage = () => {
-    const { userId } = useParams<{ userId: string }>();
     const { user: currentUser } = useAuth();
-    const [effectiveUserId, setEffectiveUserId] = useState<string>('');
+    const { userId } = useParams<{ userId: string }>();
+    const [sendRequest] = useSendRequestMutation();
+    const [cancelRequest] = useCancelRequestMutation();
+    const [unfriend] = useUnfriendMutation();
 
-    useEffect(() => {
-        const id = userId || currentUser?.id || '';
-        setEffectiveUserId(id);
-    }, [userId, currentUser?.id]);
+    const { data: profileUser, isLoading: isUserLoading } = useGetUserQuery(userId as string);
+    const userPosts = (userId: string) => useGetUserPostsQuery(userId as string);
+    
+    const { data: request } = useCheckRequestStatusQuery({
+        sender: currentUser?.id as string,
+        receiver: userId as string
+    });
 
-    const { data: profileUser, isLoading: isUserLoading } = useGetUserQuery(effectiveUserId);
-    const userPosts = (effectiveUserId: string) => useGetUserPostsQuery(effectiveUserId);
+    const handleSendRequest = async () => {
+        if (!currentUser || !userId) return;
 
-    const handleFriendAction = () => {
-
+        try {
+            await sendRequest({
+                sender: currentUser.id,
+                receiver: userId
+            }).unwrap();
+        } catch (error) {
+            console.error('Friend request error:', error);
+        }
     };
+
+    const handleCancelRequest = async () => {
+        if (!currentUser || !userId) return;
+
+        try {
+            await cancelRequest({
+                sender: currentUser.id,
+                receiver: userId
+            }).unwrap();
+        } catch (err) {
+            console.error("Error cancelling request:", err);
+        }
+    }
+
+    const handleUnfriendRequest = async () => {
+        if (!currentUser || !userId) return;
+
+        try {
+            await unfriend({
+                userId: currentUser.id,
+                friendId: userId
+            }).unwrap();
+        } catch (err) {
+            console.error("Error unfriending:", err);
+        }
+    }
 
     if (isUserLoading) return <div className={styles.loading}>Loading profile...</div>;
     if (!profileUser) return <div className={styles.error}>User not found</div>;
 
-    const isCurrentUser = currentUser?.id === effectiveUserId;
+    const isCurrentUser: boolean = currentUser?.id === userId;
+    const isFriend: boolean = currentUser?.friends?.includes(userId as string) || false;
+    const isPending: boolean = request?.status as string === "PENDING";
 
     return (
         <div className={styles.profilePage}>
             <Profile
                 user={{
-                    _id: effectiveUserId,
+                    _id: userId as string,
                     username: profileUser.username,
                     email: profileUser.email,
                     profile_picture: profileUser.profile_picture,
                     friends: profileUser.friends
                 }}
-                onFriend={!isCurrentUser ? handleFriendAction : undefined}
+                onFriend={
+                    !isCurrentUser && !isFriend && !isPending ? handleSendRequest : 
+                        isFriend ? handleUnfriendRequest :
+                            isPending ? handleCancelRequest : undefined
+                }
                 isCurrentUser={isCurrentUser}
+                friendStatus={
+                    isCurrentUser && !isFriend && !isPending ? undefined :
+                        isFriend ? FriendStatus.FRIENDS :
+                            isPending ? FriendStatus.PENDING : FriendStatus.NONE
+                }
             />
             <Posts
                 getPosts={userPosts}
-                userId={effectiveUserId}
+                userId={userId as string}
             />
         </div>
     )

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { selectCurrentToken } from './redux/auth/authSlice';
 import Feed from './components/posts/Feed';
 import ProfilePage from './components/profile/ProfilePage';
+import FriendsPage from './components/friends/FriendsPage';
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 	const token = useSelector(selectCurrentToken);
@@ -50,6 +51,14 @@ const router = createBrowserRouter([
 			</UnauthGuard>
 		),
 	},
+	{
+		path: '/friends',
+		element: (
+			<AuthGuard>
+				<FriendsPage />
+			</AuthGuard>
+		),
+	}
 ]);
 
 function App() {

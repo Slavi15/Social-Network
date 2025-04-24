@@ -12,7 +12,7 @@ interface PostsProps {
 }
 
 const Posts = ({ getPosts, userId }: PostsProps) => {
-    const { data: posts, isLoading, error } = getPosts(userId);
+    const { data: posts, isLoading, error } = getPosts(userId as string);
 
     if (isLoading) return <div className={styles.loading}>Loading posts...</div>;
     if (error) return <div className={styles.error}>Error loading posts</div>;

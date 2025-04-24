@@ -14,17 +14,3 @@ export interface IMessage {
     content: string;
     createdAt: Date;
 }
-
-export interface IFriendRequest {
-    id: string;
-    sender: string;
-    receiver: string;
-    status: FriendRequestStatus;
-    createdAt: Date;
-}
-
-export enum FriendRequestStatus {
-    PENDING = "PENDING",
-    ACCEPTED = "ACCEPTED",
-    REJECTED = "REJECTED"
-}

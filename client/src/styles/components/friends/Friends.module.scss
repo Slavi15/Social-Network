@@ -1,0 +1,50 @@
+.friendPage {
+    margin: 2vh auto;
+
+    .friendSection {
+        margin: 2vh auto;
+        width: 75%;
+    }
+
+    .friendRequest {
+        display: grid;
+        grid-template-columns: 20% 30% 50%;
+        place-items: center;
+        width: 90%;
+        height: 15vh;
+        margin: 2vh auto;
+        border-radius: 20px;
+        background-color: #FAFAFA;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+        .username {
+            justify-self: start;
+        }
+
+        .requestActions {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 50% 50%;
+            place-items: center;
+
+            .acceptButton, .rejectButton {
+                width: 60%;
+                height: 6vh;
+                color: #FFFFFF;
+                background-color: #343434;
+                transition: all 0.3s ease;
+                cursor: pointer;
+
+                &:hover {
+                    color: #343434;
+                    background-color: #FFFFFF;
+                    border: 1px solid #343434;
+                }
+            }
+        }
+    }
+}
+
+.empty {
+    text-align: center;
+}

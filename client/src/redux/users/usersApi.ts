@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { IUser } from '../types/index';
 import { RootState } from '../store';
+import { IConnection } from '../types/users';
 
 export const usersApi = createApi({
     reducerPath: 'usersApi',
@@ -30,6 +31,10 @@ export const usersApi = createApi({
             query: (userId) => `/${userId}`,
             providesTags: (_result, _error, userId) => [{ type: 'User', id: userId }],
         }),
+        getMutualFriends: builder.query<IConnection[], string>({
+            query: (userId) => `/mutuals/${userId}`,
+            providesTags: (_result, _error, userId) => [{ type: 'User', id: userId }],
+        }),
         updateUser: builder.mutation<IUser, { userId: string; updates: Partial<IUser> }>({
             query: ({ userId, updates }) => ({
                 url: `/${userId}`,
@@ -51,6 +56,7 @@ export const usersApi = createApi({
 export const {
     useGetUsersQuery,
     useGetUserQuery,
+    useGetMutualFriendsQuery,
     useUpdateUserMutation,
     useDeleteUserMutation,
 } = usersApi;

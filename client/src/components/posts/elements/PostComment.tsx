@@ -1,6 +1,7 @@
 import { FC, useState } from 'react';
 import { useAuth } from '../../../redux/auth/authHooks';
 import { useDeleteCommentMutation, useEditCommentMutation } from '../../../redux/posts/postsApi';
+import ProfilePicture, { ImageSize } from '../../profile/ProfilePicture';
 import styles from '../../../styles/components/posts/Post.module.scss';
 
 interface CommentUser {
@@ -25,10 +26,6 @@ const PostComment: FC<PostCommentProps> = ({ comment, postId }) => {
     const [editedContent, setEditedContent] = useState(comment.content);
     const [editComment] = useEditCommentMutation();
     const [deleteComment] = useDeleteCommentMutation();
-
-    const getAvatarURI = (str: string) => {
-        return `data:image/svg+xml;utf8,${encodeURIComponent(str)}`;
-    };
 
     const handleEdit = async () => {
         try {
@@ -59,11 +56,12 @@ const PostComment: FC<PostCommentProps> = ({ comment, postId }) => {
     return (
         <div className={styles.comment}>
             <div className={styles.commentHeader}>
-                <img
-                    src={getAvatarURI(comment.user_id.profile_picture || '')}
-                    alt={comment.user_id.username}
-                    className={styles.commentAvatar}
-                />
+                <ProfilePicture
+                    userId={comment.user_id._id as string}
+                    username={comment.user_id.username as string}
+                    profilePicture={comment.user_id.profile_picture as string}
+                    size={ImageSize.SMALL}
+                    linkToProfile={true} />
 
                 <strong className={styles.commentUser}>{comment.user_id.username}</strong>
 

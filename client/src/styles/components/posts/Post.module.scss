@@ -1,7 +1,7 @@
 .post {
     width: 100%;
     padding: 1rem;
-    margin: 5vh auto;
+    margin: 4vh auto;
     border-radius: 20px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 
@@ -84,7 +84,7 @@
     .postActions {
         height: 4vh;
         display: grid;
-        grid-template-columns: 50% 50%;
+        grid-template-columns: 33.33% 33.33% 33.33%;
         place-items: center;
 
         .actionButton {
@@ -92,6 +92,10 @@
             font-size: 16px;
             display: flex;
             gap: 1rem;
+            cursor: pointer;
+        }
+
+        .postDelete {
             cursor: pointer;
         }
     }
@@ -153,12 +157,6 @@
                     display: grid;
                     grid-template-columns: 10% 40% 50%;
                     place-items: center;
-
-                    .commentAvatar {
-                        width: 50px;
-                        height: 50px;
-                        object-fit: cover;
-                    }
 
                     .commentUser {
                         justify-self: start;

@@ -60,6 +60,7 @@ const Post: FC<IPost> = ({
             <PostContent content={content} media={media} />
 
             <PostActions
+                postId={_id}
                 isLiked={isLiked}
                 likeCount={likeCount}
                 commentCount={commentCount}

@@ -2,6 +2,12 @@ import React from "react";
 import styles from '../../styles/components/profile/ProfilePage.module.scss'
 import ProfilePicture, { ImageSize } from "./ProfilePicture";
 
+export enum FriendStatus {
+    FRIENDS,
+    PENDING,
+    NONE
+}
+
 interface UserProfile {
     _id: string;
     username: string;
@@ -14,13 +20,24 @@ interface ProfileProps {
     user: UserProfile;
     onFriend?: () => void;
     isCurrentUser?: boolean;
+    friendStatus: FriendStatus | undefined;
 }
 
 const Profile: React.FC<ProfileProps> = ({
     user,
     onFriend,
-    isCurrentUser
+    isCurrentUser,
+    friendStatus
 }) => {
+    const getButtonText = () => {
+        switch (friendStatus) {
+            case FriendStatus.FRIENDS: return 'Friends';
+            case FriendStatus.PENDING: return 'Pending';
+            case FriendStatus.NONE: return 'Add Friend';
+            default: return '';
+        }
+    };
+
     return (
         <div className={styles.profileHeader}>
             <div className={styles.avatarContainer}>
@@ -48,7 +65,7 @@ const Profile: React.FC<ProfileProps> = ({
                         onClick={onFriend}
                         className={styles.friendButton}
                     >
-                        Add Friend
+                        {getButtonText()}
                     </button>
                 )}
             </div>

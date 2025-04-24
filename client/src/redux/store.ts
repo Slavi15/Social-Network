@@ -6,6 +6,7 @@ import { api } from './auth/authApi';
 import { postsApi } from './posts/postsApi';
 import { uploadsApi } from './uploads/uploadApi';
 import { usersApi } from './users/usersApi';
+import { friendsApi } from './friends/friendsApi';
 
 const persistConfig = {
     key: 'auth',
@@ -21,6 +22,7 @@ export const store = configureStore({
         [postsApi.reducerPath]: postsApi.reducer,
         [usersApi.reducerPath]: usersApi.reducer,
         [uploadsApi.reducerPath]: uploadsApi.reducer,
+        [friendsApi.reducerPath]: friendsApi.reducer,
         auth: persistedReducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -32,7 +34,8 @@ export const store = configureStore({
         .concat(api.middleware)
         .concat(postsApi.middleware)
         .concat(usersApi.middleware)
-        .concat(uploadsApi.middleware),
+        .concat(uploadsApi.middleware)
+        .concat(friendsApi.middleware),
 });
 
 export const persistor = persistStore(store);
