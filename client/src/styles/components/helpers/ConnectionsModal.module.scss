@@ -1,0 +1,15 @@
+.connectionModal {
+    width: 100%;
+
+    .connInfo {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 50% 50%;
+        align-items: center;
+        justify-self: start;
+
+        .mutualInfo {
+            cursor: pointer;
+        }
+    }
+}

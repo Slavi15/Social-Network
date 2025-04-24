@@ -4,6 +4,7 @@ import ProfilePicture, { ImageSize } from "../profile/ProfilePicture";
 import { useSendRequestMutation } from "../../redux/friends/friendsApi";
 import { useAuth } from "../../redux/auth/authHooks";
 import styles from '../../styles/components/friends/Friends.module.scss';
+import ConnectionsModal from "../helpers/ConnectionsModal";
 
 interface FriendConnectionProps {
     connection: IConnection;
@@ -41,10 +42,7 @@ const FriendConnection: React.FC<FriendConnectionProps> = ({
                 size={ImageSize.MEDIUM}
                 linkToProfile={true} />
 
-            <div className={styles.connInfo}>
-                <h2 className={styles.username}>{user.username}</h2>
-                <p className={styles.mutualInfo}>Mutual Friends {connection.mutualCount} </p>
-            </div>
+            <ConnectionsModal user={user} connection={connection} />
 
             <button 
                 className={styles.addButton}

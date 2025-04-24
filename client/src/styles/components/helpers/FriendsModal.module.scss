@@ -1,0 +1,11 @@
+.friendsModal {
+    width: 100%;
+
+    .statItem {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        cursor: pointer;
+    }
+}

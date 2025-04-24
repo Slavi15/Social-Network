@@ -1,6 +1,8 @@
 import React from "react";
 import styles from '../../styles/components/profile/ProfilePage.module.scss'
 import ProfilePicture, { ImageSize } from "./ProfilePicture";
+import { IUser } from "../../redux/types";
+import FriendsModal from "../helpers/FriendsModal";
 
 export enum FriendStatus {
     FRIENDS,
@@ -8,12 +10,12 @@ export enum FriendStatus {
     NONE
 }
 
-interface UserProfile {
+export interface UserProfile {
     _id: string;
     username: string;
     email: string;
     profile_picture?: string;
-    friends?: string[];
+    friends?: IUser[];
 }
 
 interface ProfileProps {
@@ -55,10 +57,7 @@ const Profile: React.FC<ProfileProps> = ({
             </div>
 
             <div className={styles.stats}>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Friends</span>
-                    <span className={styles.statNumber}>{user.friends?.length || 0}</span>
-                </div>
+                <FriendsModal user={user} />
 
                 {!isCurrentUser && onFriend && (
                     <button

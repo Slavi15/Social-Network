@@ -3,7 +3,7 @@ export interface IUser {
     username: string;
     email: string;
     profile_picture?: string;
-    friends: string[];
+    friends: IUser[];
     is_active: boolean;
 }
 

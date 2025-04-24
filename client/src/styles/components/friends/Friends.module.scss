@@ -55,14 +55,6 @@
         background-color: #FAFAFA;
         box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 
-        .connInfo {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 50% 50%;
-            align-items: center;
-            justify-self: start;
-        }
-
         .addButton {
             width: 60%;
             height: 6vh;
@@ -77,6 +69,27 @@
                 border: 1px solid #343434;
             }
         }
+    }
+}
+
+.friendInfo {
+    width: 100%;
+    height: 12vh;
+    display: grid;
+    margin: 2vh auto;
+    grid-template-columns: 20% 40% 40%;
+    place-items: center;
+    background-color: #FAFAFA;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+    .friendUsername {
+        justify-self: start;
+    }
+
+    .statItem {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 }
 
