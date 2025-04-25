@@ -1,24 +1,24 @@
-import { IUser } from "./index.ts";
+import { IUser } from "./users";
 
 export interface LoginRequest {
-  email: string;
-  password: string;
+	email: string;
+	password: string;
 }
 
 export interface LoginResponse {
-  user: IUser;
-  accessToken: string;
-  message: string;
+	user: IUser;
+	accessToken: string;
+	message: string;
 }
 
 export interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
+	username: string;
+	email: string;
+	password: string;
 }
 
 export interface RegisterResponse {
-  user: IUser;
-  accessToken: string;
-  message: string;
+	user: IUser;
+	accessToken: string;
+	message: string;
 }

@@ -22,7 +22,7 @@ const FriendConnection: React.FC<FriendConnectionProps> = ({
 
         try {
             await sendRequest({
-                sender: currentUser.id as string,
+                sender: currentUser._id as string,
                 receiver: user?._id as string,
             }).unwrap();
         } catch (error) {
@@ -36,7 +36,7 @@ const FriendConnection: React.FC<FriendConnectionProps> = ({
     return (
         <div className={styles.connection}>
             <ProfilePicture
-                userId={user.id as string}
+                userId={user._id as string}
                 username={user.username}
                 profilePicture={user.profile_picture as string}
                 size={ImageSize.MEDIUM}

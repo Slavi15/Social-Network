@@ -3,7 +3,7 @@ import { useLoginMutation, useRegisterMutation, useLogoutMutation } from './auth
 import { selectCurrentUser, selectCurrentToken, setCredentials, logout } from './authSlice';
 import type { AppDispatch } from '../store';
 import type { SerializedError } from '@reduxjs/toolkit';
-import { IUser } from '../types';
+import { IUser } from '../types/users';
 import { LoginRequest, RegisterRequest } from '../types/auth';
 import { usePersistStore } from '../hooks/usePersistStore';
 

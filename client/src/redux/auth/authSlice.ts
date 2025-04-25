@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { api } from './authApi';
 import type { RootState } from '../store';
-import type { IUser } from '../types/index';
+import type { IUser } from '../types/users';
 
 export enum AuthStatus {
     IDLE = "IDLE",

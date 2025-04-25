@@ -28,7 +28,7 @@ const PostForm = ({ onSuccess }: PostFormProps) => {
     const { user } = useAuth();
 
     const initialValues: PostProps = {
-        user_id: user?.id as string,
+        user_id: user?._id as string,
         content: '',
         media: null,
         privacy: Privacy.FRIENDS,

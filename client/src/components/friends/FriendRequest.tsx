@@ -9,7 +9,10 @@ interface FriendRequestProps {
     getUser: (id: string) => ReturnType<typeof useGetUserQuery>;
 }
 
-const FriendRequest = ({ request, getUser }: FriendRequestProps) => {
+const FriendRequest: React.FC<FriendRequestProps> = ({ 
+    request, 
+    getUser 
+}) => {
     const { data: sender } = getUser(request.sender as string);
     const [acceptRequest] = useAcceptRequestMutation();
     const [rejectRequest] = useRejectRequestMutation();

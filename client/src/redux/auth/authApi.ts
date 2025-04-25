@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { IUser } from '../types/index';
+import type { IUser } from '../types/users';
 import type { LoginRequest, RegisterRequest } from '../types/auth';
 import type { RootState } from '../store';
 

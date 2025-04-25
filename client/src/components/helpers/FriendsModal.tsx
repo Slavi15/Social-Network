@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { IUser } from "../../redux/types";
-import styles from '../../styles/components/helpers/FriendsModal.module.scss'
 import Modal from "./Modal";
 import FriendInfo from "../profile/FriendInfo";
 import { UserProfile } from "../profile/Profile";
+import styles from '../../styles/components/helpers/FriendsModal.module.scss'
+import { IUser } from "../../redux/types/users";
 
 interface FriendsModalProps {
     user: UserProfile;

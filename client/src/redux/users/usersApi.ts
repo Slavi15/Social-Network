@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { IUser } from '../types/index';
+import { IUser } from '../types/users';
 import { RootState } from '../store';
 import { IConnection } from '../types/users';
 
@@ -8,7 +8,7 @@ export const usersApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: `${import.meta.env.VITE_API_BASE_URL}/users`,
         prepareHeaders: (headers, { getState }) => {
-            const token = (<RootState>getState()).auth.accessToken;
+            const token = (getState() as RootState).auth.accessToken;
             if (token) {
                 headers.set('Authorization', `Bearer ${token}`);
             }
@@ -22,7 +22,7 @@ export const usersApi = createApi({
             providesTags: (result) =>
                 result
                     ? [
-                        ...result.map(({ id }) => ({ type: 'User' as const, id: id })),
+                        ...result.map(({ _id }) => ({ type: 'User' as const, id: _id })),
                         { type: 'User', id: 'LIST' },
                     ]
                     : [{ type: 'User', id: 'LIST' }],
@@ -48,7 +48,10 @@ export const usersApi = createApi({
                 url: `/${userId}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: (_result, _error, userId) => [{ type: 'User', id: userId }],
+            invalidatesTags: (_result, _error, userId) => [
+                { type: 'User', id: userId },
+                { type: 'User', id: 'LIST' }
+            ],
         }),
     }),
 });

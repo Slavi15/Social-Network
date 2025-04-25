@@ -1,8 +1,8 @@
 import React from "react";
-import styles from '../../styles/components/profile/ProfilePage.module.scss'
 import ProfilePicture, { ImageSize } from "./ProfilePicture";
-import { IUser } from "../../redux/types";
 import FriendsModal from "../helpers/FriendsModal";
+import { IUser } from "../../redux/types/users";
+import styles from '../../styles/components/profile/ProfilePage.module.scss'
 
 export enum FriendStatus {
     FRIENDS,

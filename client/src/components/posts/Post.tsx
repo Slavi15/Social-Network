@@ -23,14 +23,14 @@ const Post: FC<IPost> = ({
     const [addComment] = useAddCommentMutation();
     const [showComments, setShowComments] = useState(false);
 
-    const isLiked = user ? likes.includes(user.id) : false;
+    const isLiked = user ? likes.includes(user._id) : false;
     const likeCount = likes.length;
     const commentCount = comments.length;
 
     const handleLike = async () => {
         if (!user) return;
         try {
-            await likePost({ postId: _id, userId: user.id }).unwrap();
+            await likePost({ postId: _id, userId: user._id }).unwrap();
         } catch (error) {
             console.error('Failed to like post:', error);
         }
@@ -41,7 +41,7 @@ const Post: FC<IPost> = ({
         try {
             await addComment({
                 postId: _id,
-                userId: user.id,
+                userId: user._id,
                 content: commentText
             }).unwrap();
         } catch (error) {

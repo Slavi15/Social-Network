@@ -12,7 +12,7 @@ const Feed = () => {
             <PostFormModal />
             <Posts 
                 getPosts={visiblePostsQuery}
-                userId={user?.id || ''} />
+                userId={user?._id as string} />
         </div>
     )
 }

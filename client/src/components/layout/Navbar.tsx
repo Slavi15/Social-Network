@@ -74,11 +74,11 @@ const Navbar = () => {
                 <div className={styles.navbarRight} ref={dropdownRef}>
                     <div className={styles.avatarContainer} onClick={toggleDropdown}>
                         <ProfilePicture
-                            userId={user?.id as string}
+                            userId={user?._id as string}
                             username={user?.username as string}
                             profilePicture={user?.profile_picture as string}
                             size={ImageSize.SMALL}
-                            linkToProfile={false} />
+                            linkToProfile={true} />
                         {isDropdownOpen && <Dropdown />}
                     </div>
                     <button

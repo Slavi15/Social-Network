@@ -9,7 +9,7 @@ const Dropdown = () => {
     return (
         <div className={styles.dropdownMenu}>
             <Link 
-                to={`/profile/${user?.id}`} 
+                to={`/profile/${user?._id as string}`} 
                 className={styles.dropdownItem}
             >
                 My Profile

@@ -22,7 +22,11 @@ interface MutualProps extends FriendProps {
 
 type FriendComponentProps = PendingProps | MutualProps;
 
-const Friend = ({ userId, isPending, getData }: FriendComponentProps) => {
+const Friend: React.FC<FriendComponentProps> = ({ 
+    userId, 
+    isPending, 
+    getData 
+}) => {
     const { data, isLoading, error } = getData(userId);
     const { data: requests } = useGetRequestsQuery();
 

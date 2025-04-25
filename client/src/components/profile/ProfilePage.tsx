@@ -6,6 +6,7 @@ import Posts from "../posts/Posts";
 import Profile, { FriendStatus } from "./Profile";
 import { useCancelRequestMutation, useCheckRequestStatusQuery, useSendRequestMutation, useUnfriendMutation } from '../../redux/friends/friendsApi';
 import styles from '../../styles/components/profile/ProfilePage.module.scss'
+import { IUser } from '../../redux/types/users';
 
 const ProfilePage = () => {
     const { user: currentUser } = useAuth();
@@ -18,7 +19,7 @@ const ProfilePage = () => {
     const userPosts = (userId: string) => useGetUserPostsQuery(userId as string);
     
     const { data: request } = useCheckRequestStatusQuery({
-        sender: currentUser?.id as string,
+        sender: currentUser?._id as string,
         receiver: userId as string
     });
 
@@ -27,7 +28,7 @@ const ProfilePage = () => {
 
         try {
             await sendRequest({
-                sender: currentUser.id,
+                sender: currentUser._id,
                 receiver: userId
             }).unwrap();
         } catch (error) {
@@ -40,7 +41,7 @@ const ProfilePage = () => {
 
         try {
             await cancelRequest({
-                sender: currentUser.id,
+                sender: currentUser._id,
                 receiver: userId
             }).unwrap();
         } catch (err) {
@@ -53,7 +54,7 @@ const ProfilePage = () => {
 
         try {
             await unfriend({
-                userId: currentUser.id,
+                userId: currentUser._id,
                 friendId: userId
             }).unwrap();
         } catch (err) {
@@ -64,8 +65,8 @@ const ProfilePage = () => {
     if (isUserLoading) return <div className={styles.loading}>Loading profile...</div>;
     if (!profileUser) return <div className={styles.error}>User not found</div>;
 
-    const isCurrentUser: boolean = currentUser?.id === userId;
-    const isFriend: boolean = currentUser?.friends?.some(friend => friend.id === userId) || false;
+    const isCurrentUser: boolean = currentUser?._id === userId;
+    const isFriend: boolean = !!currentUser?.friends?.find((friend: IUser) => friend._id === userId);
     const isPending: boolean = request?.status as string === "PENDING";
 
     return (

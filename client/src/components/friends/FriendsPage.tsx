@@ -15,13 +15,13 @@ const FriendsPage = () => {
             <Friend
                 getData={pendingRequests}
                 isPending={true}
-                userId={user?.id as string} />
+                userId={user?._id as string} />
 
             <h1 className={styles.friendSection}>People you might know</h1>
             <Friend
                 getData={mutualFriends}
                 isPending={false}
-                userId={user?.id as string} />
+                userId={user?._id as string} />
         </div>
     )
 }
