@@ -145,7 +145,7 @@ class AuthController {
         }
 
         try {
-            const decoded = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET) as { id: string };
+            const decoded = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET) as { _id: string };
 
             const isBlacklisted = await redisService.isBlacklisted(refreshToken);
             if (isBlacklisted) {
@@ -160,7 +160,7 @@ class AuthController {
                 }));
             }
 
-            const user = await UserModel.findById(decoded.id).select("-password");
+            const user = await UserModel.findById(decoded._id).select("-password");
             if (!user) {
                 return next(new AppError({
                     httpCode: HttpCode.NOT_FOUND,
@@ -182,11 +182,11 @@ class AuthController {
 
             return res.status(HttpCode.OK).json({
                 user: {
-                    id: user._id,
+                    _id: user._id,
                     username: user.username,
                     email: user.email,
                     profile_picture: user.profile_picture,
-                    friends: user.friends,
+                    friends: [...user.friends],
                     is_active: user.is_active
                 },
                 accessToken: newAccessToken,

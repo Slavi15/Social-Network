@@ -7,7 +7,7 @@ export interface IUser extends Document {
     email: string;
     password: string;
     profile_picture: string;
-    friends: Types.ObjectId[];
+    friends: IUser[];
     is_active: boolean;
     comparePassword(candidatePassword: string): Promise<boolean>;
     getAvatarUrl?: () => string;
@@ -38,10 +38,10 @@ const UserSchema = new Schema<IUser>(
             required: false,
             default: "",
         },
-        friends: {
-            type: [{ type: Types.ObjectId, ref: "User" }],
-            default: [],
-        },
+        friends: [{
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }],
         is_active: {
             type: Boolean,
             default: true,
