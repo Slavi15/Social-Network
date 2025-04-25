@@ -15,7 +15,12 @@ class AuthController {
         try {
             const { email, password } = req.body;
 
-            const user: IUser = await UserModel.findOne({ email }).select("+password");
+            const user = await UserModel.findOne({ email })
+                .select("+password")
+                .populate({
+                    path: 'friends',
+                    select: '_id username profile_picture friends'
+                });
 
             if (!user) {
                 return next(new AppError({
@@ -160,7 +165,13 @@ class AuthController {
                 }));
             }
 
-            const user = await UserModel.findById(decoded._id).select("-password");
+            const user = await UserModel.findById(decoded._id)
+                .select("-password")
+                .populate({
+                    path: 'friends',
+                    select: '_id username profile_picture friends'
+                });
+
             if (!user) {
                 return next(new AppError({
                     httpCode: HttpCode.NOT_FOUND,

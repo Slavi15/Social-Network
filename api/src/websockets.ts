@@ -1,54 +1,28 @@
 import { Server } from "socket.io";
-import { createServer } from "http";
-import { MessageModel } from "@/models/messages.ts";
-import env from "@/lib/env.ts";
+import { ChatService } from "@/services/chatService";
+import { SocketEvent } from "@/types/sockets";
+import { ISendMessageData } from "@/types/chats";
 
-const httpServer = createServer();
+export function initializeSocket(io: Server, chatService: ChatService) {
+    io.on(SocketEvent.CONNECTION, (socket) => {
+        console.log(`User connected: ${socket.id}`);
 
-const io = new Server(httpServer, {
-    cors: {
-        origin: env.ORIGIN,
-        methods: ["GET", "POST"],
-    },
-});
+        socket.on(SocketEvent.SEND_MESSAGE, async (data: ISendMessageData) => {
+            try {
+                const { chatId, senderId, content } = data;
+                const { chat, message } = await chatService.handleSendMessage(chatId, senderId, content);
+                chatService.notifyParticipants(chat, message, senderId);
+            } catch (err) {
+                console.error("Error sending message:", err);
+                socket.emit(SocketEvent.MESSAGE_ERROR, {
+                    error: err instanceof Error ? err.message : "Failed to send message",
+                    chatId: data.chatId
+                });
+            }
+        });
 
-io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
-
-    socket.on("sendMessage", async (data) => {
-        const { senderId, receiverId, content } = data;
-
-        try {
-            const newMessage = await MessageModel.create({
-                sender: senderId,
-                receiver: receiverId,
-                content,
-            });
-
-            socket.to(receiverId).emit("receiveMessage", {
-                senderId,
-                content,
-                timestamp: newMessage.createdAt,
-            });
-        } catch (err) {
-            console.error("Error sending message:", err);
-        }
+        socket.on(SocketEvent.DISCONNECT, () => {
+            console.log(`User disconnected: ${socket.id}`);
+        });
     });
-
-    socket.on("joinRoom", (userId) => {
-        socket.join(userId);
-        console.log(`User ${userId} joined room ${userId}`);
-    });
-
-    socket.on("disconnect", () => {
-        console.log("A user disconnected:", socket.id);
-    });
-});
-
-const WS_PORT = env.WS_PORT || 7001;
-
-httpServer.listen(WS_PORT, () => {
-    console.log(`WebSocket server running on port: ${WS_PORT}`);
-});
-
-export { io };
+}

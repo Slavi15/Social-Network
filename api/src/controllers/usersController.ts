@@ -8,7 +8,7 @@ class UserController {
 
     public getUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const users = await UserModel.find().populate("friends", "username email profile_picture friends");
+            const users = await UserModel.find().populate("friends chats");
             res.status(200).json(users);
         } catch (err) {
             return next(new AppError({
@@ -21,7 +21,7 @@ class UserController {
     public getUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { user_id } = req.params;
-            const user = await UserModel.findById(user_id).populate("friends", "username email profile_picture friends");
+            const user = await UserModel.findById(user_id).populate("friends chats");
 
             if (!user) {
                 return next(new AppError({

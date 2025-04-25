@@ -1,50 +1,121 @@
 import { Request, Response, NextFunction } from "express";
-import { MessageModel } from "@/models/messages.ts";
-import { AppError, HttpCode } from "@/exceptions/AppError.ts";
+import { ChatModel, MessageModel } from "@/models/chats";
+import { AppError, HttpCode } from "@/exceptions/AppError";
+import { UserModel } from "@/models/users";
+import { ChatService } from "@/services/chatService";
 
-class ChatController {
+export class ChatController {
+    constructor(private chatService: ChatService) { }
 
-    public sendMessage = async (req: Request, res: Response, next: NextFunction) => {
+    public async getChats(req: Request, res: Response, next: NextFunction) {
         try {
-            const { sender, receiver, content } = req.body;
+            const { userId } = req.params;
+            const user = await UserModel.findById(userId).select('chats');
 
-            if (!content || content.trim().length === 0) {
-                return next(new AppError({
-                    httpCode: HttpCode.BAD_REQUEST,
-                    description: "Message content is required!",
-                }));
+            if (!user) {
+                throw new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "User not found"
+                });
             }
 
-            const newMessage = await MessageModel.create({ sender, receiver, content });
-            res.status(201).json(newMessage);
+            res.status(HttpCode.OK).json(user.chats);
         } catch (err) {
-            next(new AppError({
-                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-                description: "Error sending message!",
-            }));
+            next(err);
         }
-    };
+    }
 
-    public getMessages = async (req: Request, res: Response, next: NextFunction) => {
+    public async getChat(req: Request, res: Response, next: NextFunction) {
         try {
-            const { user1, user2 } = req.params;
+            const { chatId, userId } = req.params;
+            const chat = await ChatModel.findOne({
+                _id: chatId,
+                participants: userId
+            })
+                .populate("participants", "username profile_picture")
+                .populate("lastMessage.sender", "username profile_picture");
 
-            const messages = await MessageModel.find({
-                $or: [
-                    { sender: user1, receiver: user2 },
-                    { sender: user2, receiver: user1 },
-                ],
-            }).sort({ createdAt: 1 });
+            if (!chat) {
+                throw new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "Chat not found or access denied"
+                });
+            }
 
-            res.status(200).json(messages);
+            res.status(HttpCode.OK).json(chat);
         } catch (err) {
-            next(new AppError({
-                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-                description: "Error fetching messages!",
-            }));
+            next(err);
         }
-    };
-    
-}
+    }
 
-export const chatController = new ChatController();
+    public async getMessages(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { chatId, userId } = req.params;
+            const chat = await ChatModel.findOne({
+                _id: chatId,
+                participants: userId
+            })
+                .populate("messages.sender", "username profile_picture")
+                .select("messages");
+
+            if (!chat) {
+                throw new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "Chat not found or access denied"
+                });
+            }
+
+            res.status(HttpCode.OK).json(chat.messages);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    public async createChat(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { userId, participantId } = req.params;
+            const [user, participant] = await Promise.all([
+                UserModel.findById(userId),
+                UserModel.findById(participantId)
+            ]);
+
+            if (!user || !participant) {
+                throw new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "One or both users not found"
+                });
+            }
+
+            let chat = await ChatModel.findOne({
+                participants: { $all: [userId, participantId], $size: 2 }
+            });
+
+            if (!chat) {
+                chat = await ChatModel.create({
+                    participants: [userId, participantId]
+                });
+
+                await UserModel.updateMany(
+                    { _id: { $in: [userId, participantId] } },
+                    { $addToSet: { chats: chat._id } }
+                );
+            }
+
+            res.status(HttpCode.OK).json({ chatId: chat._id });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    public async sendMessage(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { chatId, userId } = req.params;
+            const { content } = req.body;
+
+            const { message } = await this.chatService.handleSendMessage(chatId, userId, content);
+            res.status(HttpCode.CREATED).json(message);
+        } catch (err) {
+            next(err);
+        }
+    }
+}
