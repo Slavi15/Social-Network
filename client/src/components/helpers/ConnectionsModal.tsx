@@ -27,7 +27,10 @@ const ConnectionsModal: React.FC<ConnectionModalProps> = ({
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 {user.friends.map((friend: IUser) => (
-                    <FriendInfo key={friend._id} friend={friend} />
+                    <FriendInfo key={friend._id} 
+                        friend={friend} 
+                        showFriends={true}
+                        shouldCreateChat={false} />
                 ))}
             </Modal>
         </div>

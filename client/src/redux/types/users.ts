@@ -4,6 +4,7 @@ export interface IUser {
     email: string;
     profile_picture?: string;
     friends: IUser[];
+    chats: string[];
     is_active: boolean;
 }
 

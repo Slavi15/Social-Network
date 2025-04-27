@@ -22,7 +22,7 @@ const ProfilePage = () => {
         sender: currentUser?._id as string,
         receiver: userId as string
     });
-
+    
     const handleSendRequest = async () => {
         if (!currentUser || !userId) return;
 

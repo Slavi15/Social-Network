@@ -8,7 +8,7 @@ export const usersApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: `${import.meta.env.VITE_API_BASE_URL}/users`,
         prepareHeaders: (headers, { getState }) => {
-            const token = (getState() as RootState).auth.accessToken;
+            const token = (<RootState>getState()).auth.accessToken;
             if (token) {
                 headers.set('Authorization', `Bearer ${token}`);
             }
@@ -26,6 +26,13 @@ export const usersApi = createApi({
                         { type: 'User', id: 'LIST' },
                     ]
                     : [{ type: 'User', id: 'LIST' }],
+        }),
+        getUsersByName: builder.mutation<IUser[], string>({
+            query: (username) => ({
+                url: `/username/${username}`,
+                method: 'GET',
+            }),
+            invalidatesTags: ['User']
         }),
         getUser: builder.query<IUser, string>({
             query: (userId) => `/${userId}`,
@@ -58,6 +65,7 @@ export const usersApi = createApi({
 
 export const {
     useGetUsersQuery,
+    useGetUsersByNameMutation,
     useGetUserQuery,
     useGetMutualFriendsQuery,
     useUpdateUserMutation,

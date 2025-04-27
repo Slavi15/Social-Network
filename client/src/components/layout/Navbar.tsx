@@ -58,7 +58,7 @@ const Navbar = () => {
                         Events
                     </Link>
                     <Link
-                        to="/chats"
+                        to={`/chats/${user?._id as string}`}
                         className={styles.navbarLink}
                         onClick={() => setIsMobileMenuOpen(false)}>
                         Chats
