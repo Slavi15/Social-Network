@@ -1,6 +1,8 @@
+import { IUser } from "./users";
+
 export interface IMessage {
     _id: string;
-    sender: string;
+    sender: IUser;
     content: string;
     timestamp: Date;
     seen: string[];

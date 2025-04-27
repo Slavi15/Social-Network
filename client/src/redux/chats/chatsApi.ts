@@ -81,20 +81,11 @@ export const chatsApi = createApi({
             IMessage,
             { chatId: string; userId: string; content: string }
         >({
-            queryFn: async ({ chatId, userId, content }) => {
-                const socket = getSocket();
-                const tempId = Date.now().toString();
-
-                return new Promise((resolve) => {
-                    socket.emit(
-                        SocketEvent.SEND_MESSAGE,
-                        { chatId, senderId: userId, content, tempId },
-                        (response: { message: IMessage }) => {
-                            resolve({ data: response.message });
-                        }
-                    );
-                });
-            },
+            query: ({ chatId, userId, content }) => ({
+                url: `/chats/send/${chatId}/users/${userId}/messages`,
+                method: 'POST',
+                body: { content }
+            }),
             invalidatesTags: (_result, _error, { chatId }) => [
                 { type: 'Chat', id: chatId },
                 { type: 'Message', id: 'LIST' },
