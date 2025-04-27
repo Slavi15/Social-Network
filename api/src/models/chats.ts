@@ -30,17 +30,20 @@ const MessageSchema = new Schema<IMessage>(
 
 const ChatSchema = new Schema<IChat>(
     {
-        participants: [{
-            type: Schema.Types.ObjectId,
-            ref: "User",
+        participants: {
+            type: [Schema.Types.ObjectId],
+            required: true
+        },
+        messages: {
+            type: [MessageSchema],
+            default: [],
             required: true,
-            validate: {
-                validator: (v: Types.ObjectId[]) => v.length >= 2,
-                message: "Chat must have at least 2 participants"
-            }
-        }],
-        messages: [MessageSchema],
-        lastMessage: MessageSchema
+        },
+        lastMessage: {
+            type: MessageSchema,
+            default: {},
+            required: false,
+        }
     },
     {
         timestamps: true

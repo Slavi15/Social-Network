@@ -1,5 +1,6 @@
 import { Schema, Types, Document, model } from "mongoose";
 import bcrypt from "bcrypt";
+import { IChat } from "@/types/chats";
 
 export interface IUser extends Document {
     _id: Types.ObjectId;
@@ -8,7 +9,7 @@ export interface IUser extends Document {
     password: string;
     profile_picture: string;
     friends: IUser[];
-    chats: Types.ObjectId[];
+    chats: IChat[];
     is_active: boolean;
     comparePassword(candidatePassword: string): Promise<boolean>;
     getAvatarUrl?: () => string;

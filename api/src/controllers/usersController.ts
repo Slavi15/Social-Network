@@ -8,8 +8,11 @@ class UserController {
 
     public getUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const users = await UserModel.find().populate("friends chats");
-            res.status(200).json(users);
+            const users = await UserModel.find()
+                .populate("friends", "-password -email -__v")
+                .populate("chats");
+
+            res.status(HttpCode.OK).json(users);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -18,10 +21,39 @@ class UserController {
         };
     };
 
+    public getUsersByName = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { username } = req.params;
+
+            if (!username || username === '') {
+                return next(new AppError({
+                    httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                    description: "Invalid username!"
+                }));
+            }
+
+            const users = await UserModel.find({
+                username: username
+            })
+                .select("-password -email -__v")
+                .populate("friends", "-password -email -__v")
+
+            res.status(HttpCode.OK).json(users);
+        } catch (err) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Invalid username!"
+            }));
+        }
+    }
+
     public getUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { user_id } = req.params;
-            const user = await UserModel.findById(user_id).populate("friends chats");
+            const user = await UserModel.findById(user_id)
+                .select("-password -email -__v")
+                .populate("friends", "-password -email -__v")
+                .populate("chats");
 
             if (!user) {
                 return next(new AppError({
@@ -30,7 +62,7 @@ class UserController {
                 }));
             };
 
-            res.status(200).json(user);
+            res.status(HttpCode.OK).json(user);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -87,7 +119,7 @@ class UserController {
             );
 
             const connections = results.filter(Boolean);
-            res.status(200).json(connections);
+            res.status(HttpCode.OK).json(connections);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -117,7 +149,7 @@ class UserController {
                 }));
             };
 
-            res.status(200).json(updatedUser);
+            res.status(HttpCode.OK).json(updatedUser);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.BAD_REQUEST,
@@ -138,7 +170,7 @@ class UserController {
                 });
             };
 
-            res.status(200).json({ message: "User deleted successfully!" });
+            res.status(HttpCode.OK).json({ message: "User deleted successfully!" });
         } catch (err) {
             next(new AppError({
                 httpCode: HttpCode.BAD_REQUEST,

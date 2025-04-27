@@ -6,25 +6,32 @@ import env from "@/lib/env";
 import { initializeSocket } from "@/websockets";
 
 export function initializeServices(httpServer: Server) {
-    const io = new SocketServer(httpServer, {
-        cors: {
-            origin: env.ORIGIN,
-            credentials: true,
-            methods: ["GET", "POST", "PUT", "DELETE"],
-            allowedHeaders: ["Content-Type", "Authorization"]
-        },
-        connectionStateRecovery: {
-            maxDisconnectionDuration: 2 * 60 * 1000
-        }
-    });
+    try {
+        console.log('Initializing Socket.IO server...');
+        const io = new SocketServer(httpServer, {
+            cors: {
+                origin: env.ORIGIN,
+                credentials: true,
+                methods: ["GET", "POST", "PUT", "DELETE"],
+                allowedHeaders: ["Content-Type", "Authorization"]
+            },
+            connectionStateRecovery: {
+                maxDisconnectionDuration: 2 * 60 * 1000
+            }
+        });
 
-    const chatService = new ChatService(io);
-    const chatController = new ChatController(chatService);
+        console.log('Socket.IO server initialized');
+        const chatService = new ChatService(io);
+        const chatController = new ChatController(chatService);
 
-    initializeSocket(io, chatService);
+        initializeSocket(io, chatService);
 
-    return {
-        chatService,
-        chatController
-    };
+        return {
+            chatService,
+            chatController
+        };
+    } catch (err) {
+        console.error('Error initializing services:', err);
+        throw err;
+    }
 }

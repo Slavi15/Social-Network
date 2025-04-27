@@ -15,7 +15,7 @@ import { createApiRouter } from "@/routes/apiRouter";
 const app = express();
 const httpServer = createServer(app);
 
-const { chatController } = initializeServices(httpServer);
+const { chatService, chatController } = initializeServices(httpServer);
 const apiRouter = createApiRouter(chatController);
 
 app.use(morgan("dev"));
@@ -33,7 +33,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(fileUpload({
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
     abortOnLimit: true,
 }));
 
