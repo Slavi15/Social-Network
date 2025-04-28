@@ -77,10 +77,7 @@ export const chatsApi = createApi({
             }),
             invalidatesTags: ['Chat'],
         }),
-        sendMessage: builder.mutation<
-            IMessage,
-            { chatId: string; userId: string; content: string }
-        >({
+        sendMessage: builder.mutation<IMessage, { chatId: string; userId: string; content: string }>({
             query: ({ chatId, userId, content }) => ({
                 url: `/chats/send/${chatId}/users/${userId}/messages`,
                 method: 'POST',

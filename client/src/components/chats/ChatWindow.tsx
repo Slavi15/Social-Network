@@ -51,6 +51,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                     messages?.map((msg: IMessage) => (
                         <MessageComponent key={msg._id as string} msg={msg} />
                     )) : "No messages!"}
+                <div ref={messagesEndRef} />
             </div>
 
             <MessageForm chatId={chatId} userId={userId} />

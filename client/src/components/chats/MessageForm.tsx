@@ -19,7 +19,7 @@ const MessageForm: React.FC<MessageFormProps> = ({
     const [sendMessage] = useSendMessageMutation();
 
     const handleSendMessage = async (
-        values: MessageFormValues, 
+        values: MessageFormValues,
         { resetForm }: FormikHelpers<MessageFormValues>
     ) => {
         try {
@@ -41,26 +41,22 @@ const MessageForm: React.FC<MessageFormProps> = ({
             }}
             onSubmit={handleSendMessage}
         >
-            {({ values }) => {
-                return (
-                    <Form className={styles.searchForm}>
-                        <Field
-                            className={styles.formInput}
-                            name="message"
-                            component={InputField}
-                            label=""
-                            placeholder="Send message..."
-                            type="text" />
+            <Form className={styles.searchForm}>
+                <Field
+                    className={styles.formInput}
+                    name="message"
+                    component={InputField}
+                    label=""
+                    placeholder="Send message..."
+                    type="text" />
 
-                        <button
-                            type="submit"
-                            className={styles.formButton}
-                        >
-                            Send
-                        </button>
-                    </Form>
-                )
-            }}
+                <button
+                    type="submit"
+                    className={styles.formButton}
+                >
+                    Send
+                </button>
+            </Form>
         </Formik>
     )
 }
