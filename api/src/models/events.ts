@@ -1,23 +1,15 @@
 import { Schema, Types, Document, model } from "mongoose";
 
 export interface IEvent extends Document {
-    creators: Types.ObjectId[];
     title: string;
     description: string;
     date: Date;
+    creators: Types.ObjectId[];
     attendees: Types.ObjectId[];
 }
 
 const EventSchema = new Schema<IEvent>(
     {
-        creators: {
-            type: [{ type: Types.ObjectId, ref: "User" }],
-            required: true,
-            validate: {
-                validator: (creators: Types.ObjectId[]) => creators.length > 0,
-                message: "At least one creator is required!",
-            },
-        },
         title: {
             type: String,
             required: true,
@@ -32,8 +24,16 @@ const EventSchema = new Schema<IEvent>(
             type: Date,
             required: true,
         },
+        creators: {
+            type: [Types.ObjectId],
+            required: true,
+            validate: {
+                validator: (creators: Types.ObjectId[]) => creators.length > 0,
+                message: "At least one creator is required!",
+            },
+        },
         attendees: {
-            type: [{ type: Types.ObjectId, ref: "User" }],
+            type: [Types.ObjectId],
             default: [],
         },
     },

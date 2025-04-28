@@ -6,6 +6,58 @@ import { AppError, HttpCode } from "@/exceptions/AppError.ts";
 
 class EventController {
 
+    public getEvents = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const events = await EventModel.find()
+                .populate('title creators attendees');
+
+            res.status(HttpCode.OK).json(events);
+        } catch (err) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Error fetching events!",
+            }));
+        }
+    };
+
+    public getEventById = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { eventId } = req.params;
+            const event = await EventModel.findById(eventId)
+                .populate('title creators attendees');
+
+            if (!event) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "Event not found!",
+                }));
+            }
+
+            res.status(HttpCode.OK).json(event);
+        } catch (err) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Error fetching event!",
+            }));
+        }
+    };
+
+    public getEventByTitle = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { title } = req.params;
+            const events = await EventModel.find({
+                title: title
+            }).populate('title creators attendees');
+
+            res.status(HttpCode.OK).json(events);
+        } catch (err) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Error searching events by title!",
+            }));
+        }
+    };
+
     public createEvent = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { creators, title, description, date } = req.body;
@@ -20,7 +72,7 @@ class EventController {
             }
 
             const newEvent = await EventModel.create({ creators, title, description, date });
-            res.status(201).json(newEvent);
+            res.status(HttpCode.CREATED).json(newEvent);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -31,7 +83,7 @@ class EventController {
 
     public updateEvent = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { event_id } = req.params;
+            const { eventId } = req.params;
 
             const validationError = validateEvent(req.body);
             if (validationError) {
@@ -41,7 +93,7 @@ class EventController {
                 }));
             }
 
-            const updatedEvent = await EventModel.findByIdAndUpdate(event_id, req.body, { new: true });
+            const updatedEvent = await EventModel.findByIdAndUpdate(eventId, req.body, { new: true });
 
             if (!updatedEvent) {
                 return next(new AppError({
@@ -50,7 +102,7 @@ class EventController {
                 }));
             }
 
-            res.status(200).json(updatedEvent);
+            res.status(HttpCode.OK).json(updatedEvent);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -59,12 +111,33 @@ class EventController {
         }
     };
 
+    public deleteEvent = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { eventId } = req.params;
+            const deletedEvent = await EventModel.findByIdAndDelete(eventId);
+
+            if (!deletedEvent) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "Event not found!",
+                }));
+            }
+
+            res.status(HttpCode.OK).json({ message: "Event deleted successfully" });
+        } catch (err) {
+            return next(new AppError({
+                httpCode: HttpCode.INTERNAL_SERVER_ERROR,
+                description: "Error deleting event!",
+            }));
+        }
+    };
+
     public addCreator = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { event_id } = req.params;
+            const { eventId } = req.params;
             const { creator_id } = req.body;
 
-            const event = await EventModel.findById(event_id);
+            const event = await EventModel.findById(eventId);
 
             if (!event) {
                 return next(new AppError({
@@ -92,7 +165,7 @@ class EventController {
             event.creators.push(creator_id);
             await event.save();
 
-            res.status(200).json(event);
+            res.status(HttpCode.OK).json(event);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -103,10 +176,10 @@ class EventController {
 
     public removeCreator = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { event_id } = req.params;
+            const { eventId } = req.params;
             const { creator_id } = req.body;
 
-            const event = await EventModel.findById(event_id);
+            const event = await EventModel.findById(eventId);
 
             if (!event) {
                 return next(new AppError({
@@ -125,7 +198,7 @@ class EventController {
             event.creators = event.creators.filter((id) => id.toString() !== creator_id);
             await event.save();
 
-            res.status(200).json(event);
+            res.status(HttpCode.OK).json(event);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -136,10 +209,10 @@ class EventController {
 
     public joinEvent = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { event_id } = req.params;
+            const { eventId } = req.params;
             const { user_id } = req.body;
 
-            const event = await EventModel.findById(event_id);
+            const event = await EventModel.findById(eventId);
 
             if (!event) {
                 return next(new AppError({
@@ -167,7 +240,7 @@ class EventController {
             event.attendees.push(user_id);
             await event.save();
 
-            res.status(200).json(event);
+            res.status(HttpCode.OK).json(event);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
@@ -178,10 +251,10 @@ class EventController {
 
     public leaveEvent = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { event_id } = req.params;
+            const { eventId } = req.params;
             const { user_id } = req.body;
 
-            const event = await EventModel.findById(event_id);
+            const event = await EventModel.findById(eventId);
 
             if (!event) {
                 return next(new AppError({
@@ -200,7 +273,7 @@ class EventController {
             event.attendees = event.attendees.filter((id) => id.toString() !== user_id);
             await event.save();
 
-            res.status(200).json(event);
+            res.status(HttpCode.OK).json(event);
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
