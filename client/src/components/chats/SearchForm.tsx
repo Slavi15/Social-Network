@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGetUsersByNameMutation } from "../../redux/users/usersApi";
 import { Field, Form, Formik } from "formik";
-import { InputField } from "../auth/widgets/InputField";
+import { InputField } from "../widgets/InputField";
 import styles from '../../styles/components/chats/ChatsPage.module.scss'
 import { IUser } from "../../redux/types/users";
 import FriendInfo from "../profile/FriendInfo";
@@ -53,8 +53,8 @@ const SearchForm = () => {
                 {users && (
                     <>
                         {users.map((user: IUser) => (
-                            <FriendInfo key={user._id} 
-                                friend={user} 
+                            <FriendInfo key={user._id}
+                                friend={user}
                                 showFriends={false}
                                 shouldCreateChat={true} />
                         ))}

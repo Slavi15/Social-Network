@@ -1,6 +1,6 @@
 import { Field, Form, Formik, FormikHelpers } from "formik"
 import { useSendMessageMutation } from "../../redux/chats/chatsApi";
-import { InputField } from "../auth/widgets/InputField";
+import { InputField } from "../widgets/InputField";
 import styles from '../../styles/components/chats/ChatsPage.module.scss'
 
 interface MessageFormProps {

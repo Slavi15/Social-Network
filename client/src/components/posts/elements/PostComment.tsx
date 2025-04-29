@@ -51,7 +51,7 @@ const PostComment: FC<PostCommentProps> = ({ comment, postId }) => {
         }
     };
 
-    const isCurrentUser = user?.id === comment.user_id._id;
+    const isCurrentUser = user?._id === comment.user_id._id;
 
     return (
         <div className={styles.comment}>

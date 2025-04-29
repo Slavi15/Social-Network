@@ -8,6 +8,8 @@ import Feed from './components/posts/Feed';
 import ProfilePage from './components/profile/ProfilePage';
 import FriendsPage from './components/friends/FriendsPage';
 import ChatsPage from './components/chats/ChatsPage';
+import EventsPage from './components/events/EventsPage';
+import EventComponent from './components/events/EventComponent';
 
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 	const token = useSelector(selectCurrentToken);
@@ -68,6 +70,22 @@ const router = createBrowserRouter([
 			</AuthGuard>
 		)
 	},
+	{
+		path: '/events',
+		element: (
+			<AuthGuard>
+				<EventsPage />
+			</AuthGuard>
+		)
+	},
+	{
+		path: '/events/:eventId',
+		element: (
+			<AuthGuard>
+				<EventComponent />
+			</AuthGuard>
+		)
+	}
 ]);
 
 function App() {

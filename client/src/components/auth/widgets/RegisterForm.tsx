@@ -1,7 +1,7 @@
 import { Formik, Form, Field } from 'formik';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RegisterSchema } from '../../../schemas/auth';
-import { InputField } from './InputField';
+import { InputField } from '../../widgets/InputField';
 import { useRegisterMutation } from '../../../redux/auth/authApi';
 
 import styles from "../../../styles/components/auth/widgets/AuthForm.module.scss"

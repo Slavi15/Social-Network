@@ -34,7 +34,7 @@ export const eventsApi = createApi({
                     ? [...result.map(({ _id }) => ({ type: 'Event' as const, id: _id })), 'Event']
                     : ['Event'],
         }),
-        createEvent: builder.mutation<IEvent, { creators: string; title: string; description: string; date: Date }>({
+        createEvent: builder.mutation({
             query: (eventData) => ({
                 url: '/create',
                 method: 'POST',
@@ -42,7 +42,7 @@ export const eventsApi = createApi({
             }),
             invalidatesTags: ['Event'],
         }),
-        updateEvent: builder.mutation<IEvent, { eventId: string; updates: Partial<IEvent> }>({
+        updateEvent: builder.mutation({
             query: ({ eventId, updates }) => ({
                 url: `/${eventId}/update`,
                 method: 'PUT',
@@ -103,4 +103,4 @@ export const {
     useRemoveCreatorMutation,
     useJoinEventMutation,
     useLeaveEventMutation
-} = eventsApi
+} = eventsApi;

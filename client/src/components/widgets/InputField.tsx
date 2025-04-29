@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { ErrorMessage, FieldProps } from 'formik';
-import styles from "../../../styles/components/auth/widgets/InputField.module.scss"
+import styles from "../../styles/components/auth/widgets/Field.module.scss"
 
 interface InputFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'form'> {
     label: string;
