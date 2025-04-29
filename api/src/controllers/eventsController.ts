@@ -9,7 +9,7 @@ class EventController {
     public getEvents = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const events = await EventModel.find()
-                .populate('title creators attendees');
+                .populate('title banner creators attendees');
 
             res.status(HttpCode.OK).json(events);
         } catch (err) {
@@ -24,7 +24,7 @@ class EventController {
         try {
             const { eventId } = req.params;
             const event = await EventModel.findById(eventId)
-                .populate('title creators attendees');
+                .populate('title banner creators attendees');
 
             if (!event) {
                 return next(new AppError({
@@ -47,7 +47,7 @@ class EventController {
             const { title } = req.params;
             const events = await EventModel.find({
                 title: title
-            }).populate('title creators attendees');
+            }).populate('title banner creators attendees');
 
             res.status(HttpCode.OK).json(events);
         } catch (err) {
@@ -60,7 +60,7 @@ class EventController {
 
     public createEvent = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { creators, title, description, date } = req.body;
+            const { title, description, creators, banner, date } = req.body;
 
             const validationError = validateEvent(req.body);
 
@@ -71,7 +71,13 @@ class EventController {
                 }));
             }
 
-            const newEvent = await EventModel.create({ creators, title, description, date });
+            const newEvent = await EventModel.create({
+                title,
+                description,
+                creators,
+                banner,
+                date: new Date(date)
+            });
             res.status(HttpCode.CREATED).json(newEvent);
         } catch (err) {
             return next(new AppError({
