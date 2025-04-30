@@ -7,6 +7,7 @@ export enum Privacy {
 };
 
 export interface IComment extends Types.Subdocument {
+    _id: Types.ObjectId;
     user_id: Types.ObjectId;
     content: string;
     createdAt: Date;
@@ -20,6 +21,7 @@ export interface MediaProps {
 }
 
 export interface IPost extends Document {
+    _id: Types.ObjectId;
     user_id: Types.ObjectId;
     content: string;
     media: MediaProps | null;
