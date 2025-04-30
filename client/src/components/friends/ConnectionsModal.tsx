@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IConnection } from "../../redux/types/users";
 import { IUser } from "../../redux/types/users";
-import Modal from "./Modal";
+import Modal from "../helpers/Modal";
 import FriendInfo from "../profile/FriendInfo";
 import styles from '../../styles/components/helpers/ConnectionsModal.module.scss'
 

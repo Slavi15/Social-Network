@@ -17,7 +17,7 @@ const ChatsPage = () => {
     return (
         <div className={styles.chatsPage}>
             <div className={styles.chatComponents}>
-                <SearchForm />
+                <SearchForm shouldCreateChat={true} />
                 {chats && chats.map((chat: IChat) => (
                     <div key={chat._id} onClick={() => setSelectedChat(chat._id)} style={{ width: '100%' }}>
                         <ChatComponent chat={chat} />

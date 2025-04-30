@@ -1,6 +1,6 @@
 import React from "react";
 import ProfilePicture, { ImageSize } from "./ProfilePicture";
-import FriendsModal from "../helpers/FriendsModal";
+import FriendsModal from "../friends/FriendsModal";
 import { IUser } from "../../redux/types/users";
 import styles from '../../styles/components/profile/ProfilePage.module.scss'
 

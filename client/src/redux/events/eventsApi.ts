@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { IEvent } from "../types/events";
 import { RootState } from "../store";
+import { IComment, IPost, MediaProps } from "../types/posts";
+import { IUser } from "../types/users";
 
 export const eventsApi = createApi({
     reducerPath: 'eventsApi',
@@ -14,7 +16,7 @@ export const eventsApi = createApi({
             return headers;
         }
     }),
-    tagTypes: ['Event'],
+    tagTypes: ['Event', 'EventPost'],
     endpoints: (builder) => ({
         getEvents: builder.query<IEvent[], void>({
             query: () => '',
@@ -60,7 +62,7 @@ export const eventsApi = createApi({
         addCreator: builder.mutation<IEvent, { eventId: string; creatorId: string }>({
             query: ({ eventId, creatorId }) => ({
                 url: `/${eventId}/add`,
-                method: 'POST',
+                method: 'PUT',
                 body: { creatorId },
             }),
             invalidatesTags: ['Event'],
@@ -89,6 +91,95 @@ export const eventsApi = createApi({
             }),
             invalidatesTags: ['Event'],
         }),
+        getEventPosts: builder.query<IPost[], string>({
+            query: (eventId) => `/${eventId}/posts`,
+            providesTags: (result, _error, eventId) =>
+                result
+                    ? [
+                        ...result.map(({ _id }) => ({ type: 'EventPost' as const, id: _id })),
+                        { type: 'Event', id: eventId }
+                    ]
+                    : [{ type: 'Event', id: eventId }],
+        }),
+        createEventPost: builder.mutation<IPost, {
+            eventId: string;
+            postData: {
+                user_id: IUser | null;
+                content: string;
+                media: MediaProps | null;
+            };
+        }>({
+            query: ({ eventId, postData }) => ({
+                url: `/${eventId}/posts/create`,
+                method: 'POST',
+                body: postData,
+            }),
+            invalidatesTags: (_result, _error, { eventId }) => [
+                { type: 'Event', id: eventId },
+                'EventPost'
+            ],
+        }),
+        updateEventPost: builder.mutation<IPost, { eventId: string; postId: string; updates: Partial<IPost> }>({
+            query: ({ eventId, postId, updates }) => ({
+                url: `/${eventId}/posts/${postId}/update`,
+                method: 'PUT',
+                body: updates,
+            }),
+            invalidatesTags: (_result, _error, { postId }) => [
+                { type: 'EventPost', id: postId }
+            ],
+        }),
+        deleteEventPost: builder.mutation<void, { eventId: string; postId: string; userId: string }>({
+            query: ({ eventId, postId, userId }) => ({
+                url: `/${eventId}/posts/${postId}/delete`,
+                method: 'DELETE',
+                body: { userId }
+            }),
+            invalidatesTags: (_result, _error, { postId, eventId }) => [
+                { type: 'EventPost', id: postId },
+                { type: 'Event', id: eventId }
+            ],
+        }),
+        likeEventPost: builder.mutation<IPost, { eventId: string; postId: string; userId: string }>({
+            query: ({ eventId, postId, userId }) => ({
+                url: `/${eventId}/posts/${postId}/like`,
+                method: 'POST',
+                body: { userId },
+            }),
+            invalidatesTags: (_result, _error, { postId }) => [
+                { type: 'EventPost', id: postId }
+            ],
+        }),
+        addCommentToEventPost: builder.mutation<IComment, { eventId: string; postId: string; commentData: Omit<IComment, '_id' | 'createdAt' | 'updatedAt'> }>({
+            query: ({ eventId, postId, commentData }) => ({
+                url: `/${eventId}/posts/${postId}/comments`,
+                method: 'POST',
+                body: commentData,
+            }),
+            invalidatesTags: (_result, _error, { postId }) => [
+                { type: 'EventPost', id: postId }
+            ],
+        }),
+        editCommentEventPost: builder.mutation<IComment, { eventId: string; postId: string; commentId: string; userId: string; content: string; }>({
+            query: ({ eventId, postId, commentId, userId, content }) => ({
+                url: `/${eventId}/posts/${postId}/comments/${commentId}/edit`,
+                method: 'PUT',
+                body: { userId, content }
+            }),
+            invalidatesTags: (_result, _error, { postId }) => [
+                { type: 'EventPost', id: postId }
+            ],
+        }),
+        deleteCommentEventPost: builder.mutation<IComment, { eventId: string; postId: string; commentId: string; userId: string; }>({
+            query: ({ eventId, postId, commentId, userId }) => ({
+                url: `/${eventId}/posts/${postId}/comments/${commentId}/delete`,
+                method: 'DELETE',
+                body: { userId }
+            }),
+            invalidatesTags: (_result, _error, { postId }) => [
+                { type: 'EventPost', id: postId }
+            ],
+        }),
     })
 });
 
@@ -102,5 +193,13 @@ export const {
     useAddCreatorMutation,
     useRemoveCreatorMutation,
     useJoinEventMutation,
-    useLeaveEventMutation
+    useLeaveEventMutation,
+    useGetEventPostsQuery,
+    useCreateEventPostMutation,
+    useUpdateEventPostMutation,
+    useDeleteEventPostMutation,
+    useLikeEventPostMutation,
+    useAddCommentToEventPostMutation,
+    useEditCommentEventPostMutation,
+    useDeleteCommentEventPostMutation
 } = eventsApi;

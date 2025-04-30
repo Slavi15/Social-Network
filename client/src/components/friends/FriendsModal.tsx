@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Modal from "./Modal";
+import Modal from "../helpers/Modal";
 import FriendInfo from "../profile/FriendInfo";
 import { UserProfile } from "../profile/Profile";
 import styles from '../../styles/components/helpers/FriendsModal.module.scss'

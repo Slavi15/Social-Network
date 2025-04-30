@@ -1,25 +1,23 @@
 import { FC, useState } from 'react';
-import PostComment from './PostComment';
+import { IComment, PostType } from '../../../redux/types/posts';
+import BasePostComment from './BasePostComment';
 import styles from '../../../styles/components/posts/Post.module.scss';
+import { useParams } from 'react-router';
 
-interface Comment {
-    _id: string;
-    user_id: {
-        _id: string;
-        username: string;
-        profile_picture?: string;
-    };
-    content: string;
-    createdAt: string;
-}
-
-interface PostCommentsProps {
-    comments: Comment[];
+interface BasePostCommentsProps {
+    comments: IComment[];
     onAddComment: (content: string) => void;
     postId: string;
+    postType: PostType;
 }
 
-const PostComments: FC<PostCommentsProps> = ({ comments, onAddComment, postId }) => {
+const BasePostComments: FC<BasePostCommentsProps> = ({
+    comments,
+    onAddComment,
+    postId,
+    postType
+}) => {
+    const { eventId } = useParams<string>();
     const [commentText, setCommentText] = useState('');
 
     const handleSubmit = () => {
@@ -48,7 +46,13 @@ const PostComments: FC<PostCommentsProps> = ({ comments, onAddComment, postId })
             <div className={styles.commentsList}>
                 {comments.length > 0 ? (
                     comments.map((comment) => (
-                        <PostComment key={comment._id} comment={comment} postId={postId} />
+                        <BasePostComment
+                            key={comment._id}
+                            comment={comment}
+                            postId={postId}
+                            postType={postType}
+                            eventId={eventId}
+                        />
                     ))
                 ) : (
                     <p className={styles.noComments}>No comments yet</p>
@@ -58,4 +62,4 @@ const PostComments: FC<PostCommentsProps> = ({ comments, onAddComment, postId })
     );
 };
 
-export default PostComments;
+export default BasePostComments;

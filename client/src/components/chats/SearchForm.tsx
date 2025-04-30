@@ -6,7 +6,15 @@ import styles from '../../styles/components/chats/ChatsPage.module.scss'
 import { IUser } from "../../redux/types/users";
 import FriendInfo from "../profile/FriendInfo";
 
-const SearchForm = () => {
+interface SearchFormProps {
+    onToggle?: (user: IUser) => void;
+    shouldCreateChat: boolean;
+}
+
+const SearchForm: React.FC<SearchFormProps> = ({
+    onToggle,
+    shouldCreateChat
+}) => {
     const [triggerSearch, { data: users }] = useGetUsersByNameMutation();
     const [debounce, setDebounce] = useState("");
 
@@ -53,10 +61,14 @@ const SearchForm = () => {
                 {users && (
                     <>
                         {users.map((user: IUser) => (
-                            <FriendInfo key={user._id}
-                                friend={user}
-                                showFriends={false}
-                                shouldCreateChat={true} />
+                            <div key={user._id}
+                                onClick={() => onToggle?.(user)}
+                            >
+                                <FriendInfo
+                                    friend={user}
+                                    showFriends={false}
+                                    shouldCreateChat={shouldCreateChat} />
+                            </div>
                         ))}
                     </>
                 )}

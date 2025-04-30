@@ -1,6 +1,6 @@
-import Post from './Post';
-import styles from '../../styles/components/posts/Posts.module.scss';
 import { IPost } from '../../redux/types/posts';
+import UserPost from './UserPost';
+import styles from '../../styles/components/posts/Posts.module.scss';
 
 interface PostsProps {
     getPosts: (userId: string) => {
@@ -21,7 +21,7 @@ const Posts = ({ getPosts, userId }: PostsProps) => {
     return (
         <div className={styles.posts}>
             {posts.map((post: IPost) => (
-                <Post key={post._id} {...post} />
+                <UserPost key={post._id} {...post} />
             ))}
         </div>
     );

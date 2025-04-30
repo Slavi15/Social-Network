@@ -1,39 +1,52 @@
 import { FC, useState } from 'react';
 import { useAuth } from '../../../redux/auth/authHooks';
-import { useDeleteCommentMutation, useEditCommentMutation } from '../../../redux/posts/postsApi';
+import { useEditCommentMutation, useDeleteCommentMutation } from '../../../redux/posts/postsApi';
 import ProfilePicture, { ImageSize } from '../../profile/ProfilePicture';
+import { IComment, PostType } from '../../../redux/types/posts';
+import { useDeleteCommentEventPostMutation, useEditCommentEventPostMutation } from '../../../redux/events/eventsApi';
 import styles from '../../../styles/components/posts/Post.module.scss';
 
-interface CommentUser {
-    _id: string;
-    username: string;
-    profile_picture?: string;
-}
-
-interface PostCommentProps {
-    comment: {
-        _id: string;
-        user_id: CommentUser;
-        content: string;
-        createdAt: string;
-    };
+interface BasePostCommentProps {
+    comment: IComment;
     postId: string;
+    postType: PostType;
+    eventId?: string;
 }
 
-const PostComment: FC<PostCommentProps> = ({ comment, postId }) => {
+const BasePostComment: FC<BasePostCommentProps> = ({
+    comment,
+    postId,
+    postType,
+    eventId
+}) => {
     const { user } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(comment.content);
-    const [editComment] = useEditCommentMutation();
-    const [deleteComment] = useDeleteCommentMutation();
+
+    const [editRegularComment] = useEditCommentMutation();
+    const [deleteRegularComment] = useDeleteCommentMutation();
+
+    const [editEventComment] = useEditCommentEventPostMutation();
+    const [deleteEventComment] = useDeleteCommentEventPostMutation();
 
     const handleEdit = async () => {
         try {
-            await editComment({
-                postId,
-                commentId: comment._id,
-                content: editedContent
-            }).unwrap();
+            if (postType === PostType.EVENT && eventId) {
+                await editEventComment({
+                    eventId,
+                    postId,
+                    commentId: comment._id,
+                    userId: user?._id || '',
+                    content: editedContent
+                }).unwrap();
+            } else {
+                await editRegularComment({
+                    postId,
+                    postType,
+                    commentId: comment._id,
+                    content: editedContent
+                }).unwrap();
+            }
             setIsEditing(false);
         } catch (error) {
             console.error('Failed to edit comment:', error);
@@ -42,10 +55,20 @@ const PostComment: FC<PostCommentProps> = ({ comment, postId }) => {
 
     const handleDelete = async () => {
         try {
-            await deleteComment({
-                postId,
-                commentId: comment._id
-            }).unwrap();
+            if (postType === PostType.EVENT && eventId) {
+                await deleteEventComment({
+                    eventId,
+                    postId,
+                    commentId: comment._id,
+                    userId: user?._id || ''
+                }).unwrap();
+            } else {
+                await deleteRegularComment({
+                    postId,
+                    postType,
+                    commentId: comment._id
+                }).unwrap();
+            }
         } catch (error) {
             console.error('Failed to delete comment:', error);
         }
@@ -57,15 +80,14 @@ const PostComment: FC<PostCommentProps> = ({ comment, postId }) => {
         <div className={styles.comment}>
             <div className={styles.commentHeader}>
                 <ProfilePicture
-                    userId={comment.user_id._id as string}
-                    username={comment.user_id.username as string}
+                    userId={comment.user_id._id}
+                    username={comment.user_id.username}
                     profilePicture={comment.user_id.profile_picture as string}
                     size={ImageSize.SMALL}
-                    linkToProfile={true} />
-
+                    linkToProfile
+                />
                 <strong className={styles.commentUser}>{comment.user_id.username}</strong>
-
-                <time dateTime={comment.createdAt}>
+                <time dateTime={comment.createdAt.toLocaleString()}>
                     {new Date(comment.createdAt).toLocaleString()}
                 </time>
             </div>
@@ -125,4 +147,4 @@ const PostComment: FC<PostCommentProps> = ({ comment, postId }) => {
     );
 };
 
-export default PostComment;
+export default BasePostComment;

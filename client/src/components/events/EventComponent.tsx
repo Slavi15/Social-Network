@@ -1,7 +1,12 @@
 import { useParams } from "react-router";
 import { useGetEventByIdQuery, useJoinEventMutation, useLeaveEventMutation } from "../../redux/events/eventsApi";
 import { useAuth } from "../../redux/auth/authHooks";
-import styles from '../../styles/components/events/Events.module.scss'
+import EventPostFormModal from "./EventPostFormModal";
+import EventPosts from "./EventPosts";
+import CreatorsModal from "./CreatorsModal";
+import AttendeesModal from "./AttendeesModal";
+import ToggleCreatorsModal from "./ToggleCreatorsModal";
+import styles from '../../styles/components/events/Events.module.scss';
 
 const EventComponent = () => {
     const { user } = useAuth();
@@ -11,10 +16,10 @@ const EventComponent = () => {
     const [joinEvent] = useJoinEventMutation();
     const [leaveEvent] = useLeaveEventMutation();
 
-    if (isLoading || isError) return;
+    if (isLoading || isError || !event) return;
 
-    const isAttending = event?.attendees.includes(user?._id as string);
-    const isCreator = event?.creators.includes(user?._id as string);
+    const isAttending = event.attendees.includes(user?._id as string);
+    const isCreator = event.creators.includes(user?._id as string);
 
     const handleJoinLeave = async () => {
         try {
@@ -35,42 +40,58 @@ const EventComponent = () => {
     };
 
     return (
-        <div className={styles.eventDetails}>
-            {event?.banner?.url && (
-                <div className={styles.bannerContainer}>
-                    <img src={event?.banner.url} alt={event?.title} className={styles.banner} />
+        <div style={{ margin: '4vh auto' }}>
+            <div className={styles.eventDetails}>
+                <div className={styles.eventHeader}>
+                    <div className={styles.statItems}>
+                        <CreatorsModal creators={event.creators} />
+                        <AttendeesModal attendees={event.attendees} />
+
+                        {isCreator ? (
+                            <ToggleCreatorsModal eventId={eventId as string} />
+                        ) : (
+                            <div className={styles.eventActions}>
+                                <button
+                                    onClick={handleJoinLeave}
+                                    className={styles.joinButton}
+                                >
+                                    {isAttending ? 'Leave' : 'Join'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {event.banner?.url && (
+                        <div className={styles.bannerContainer}>
+                            <img src={event.banner.url} alt={event.title} className={styles.banner} />
+                        </div>
+                    )}
                 </div>
-            )}
 
-            <h2 className={styles.title}>{event?.title}</h2>
+                <div className={styles.eventContent}>
+                    <h2 className={styles.title}>{event.title}</h2>
 
-            <div className={styles.meta}>
-                <span className={styles.date}>
-                    {new Date(event?.date as string).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })}
-                </span>
-                <span className={styles.attendees}>
-                    {event?.attendees.length} attending
-                </span>
+                    <div className={styles.description}>
+                        {event.description}
+                    </div>
+
+                    <div className={styles.meta}>
+                        <span className={styles.date}>
+                            {new Date(event.date as string).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </span>
+                    </div>
+                </div>
             </div>
-
-            <div className={styles.description}>
-                {event?.description}
-            </div>
-
-            {!isCreator && (
-                <button
-                    onClick={handleJoinLeave}
-                    className={`${styles.joinButton} ${isAttending ? styles.attending : ''}`}
-                >
-                    {isAttending ? 'Leave Event' : 'Join Event'}
-                </button>
+            {isCreator && (
+                <EventPostFormModal eventId={eventId as string} />
             )}
+            <EventPosts eventId={eventId as string} eventName={event.title} />
         </div>
     )
 }

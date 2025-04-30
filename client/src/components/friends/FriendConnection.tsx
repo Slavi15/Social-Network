@@ -4,7 +4,7 @@ import ProfilePicture, { ImageSize } from "../profile/ProfilePicture";
 import { useSendRequestMutation } from "../../redux/friends/friendsApi";
 import { useAuth } from "../../redux/auth/authHooks";
 import styles from '../../styles/components/friends/Friends.module.scss';
-import ConnectionsModal from "../helpers/ConnectionsModal";
+import ConnectionsModal from "./ConnectionsModal";
 
 interface FriendConnectionProps {
     connection: IConnection;

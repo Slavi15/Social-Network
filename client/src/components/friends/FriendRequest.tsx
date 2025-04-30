@@ -1,8 +1,8 @@
 import { useAcceptRequestMutation, useRejectRequestMutation } from '../../redux/friends/friendsApi';
 import { IFriendRequest } from '../../redux/types/friendRequests';
 import { useGetUserQuery } from '../../redux/users/usersApi';
-import styles from '../../styles/components/friends/Friends.module.scss'
 import ProfilePicture, { ImageSize } from '../profile/ProfilePicture';
+import styles from '../../styles/components/friends/Friends.module.scss'
 
 interface FriendRequestProps {
     request: IFriendRequest;
