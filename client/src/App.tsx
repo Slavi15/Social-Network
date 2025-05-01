@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
-import Layout from './components/Layout/Layout';
+import Layout from './components/layout/Layout.tsx';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import { useSelector } from 'react-redux';

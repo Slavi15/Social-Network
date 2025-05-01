@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../redux/auth/authHooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import Dropdown from './Dropdown';
+import Dropdown from './Dropdown.tsx';
 
 import styles from "../../styles/components/Layout/Navbar.module.scss";
 import ProfilePicture, { ImageSize } from '../profile/ProfilePicture';
