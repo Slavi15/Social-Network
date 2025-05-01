@@ -28,11 +28,7 @@ const Friend: React.FC<FriendComponentProps> = ({
     getData
 }) => {
     const { data, isLoading, error } = getData(userId);
-    const { data: requests } = useGetRequestsQuery(undefined, {
-        pollingInterval: 5000,
-        refetchOnFocus: true,
-        refetchOnReconnect: true
-    });
+    const { data: requests } = useGetRequestsQuery();
 
     if (isLoading) return <div className={styles.loading}>Loading...</div>;
     if (error) return <div className={styles.error}>Error loading!</div>;
@@ -50,11 +46,7 @@ const Friend: React.FC<FriendComponentProps> = ({
                     <FriendRequest
                         key={request._id as string}
                         request={request}
-                        getUser={(senderId: string) => useGetUserQuery(senderId as string, {
-                            pollingInterval: 5000,
-                            refetchOnFocus: true,
-                            refetchOnReconnect: true
-                        })} />
+                        getUser={(senderId: string) => useGetUserQuery(senderId as string)} />
                 )) :
                 data
                     .filter((connection: IConnection) => requests && !requests.find(req => req.receiver === connection.userId || req.sender === connection.userId))

@@ -6,11 +6,7 @@ import { IEvent } from "../../redux/types/events";
 import styles from '../../styles/components/events/Events.module.scss'
 
 const EventsPage = () => {
-    const { data: events, isLoading, isError } = useGetEventsQuery(undefined, {
-        pollingInterval: 5000,
-        refetchOnFocus: true,
-        refetchOnReconnect: true
-    });
+    const { data: events, isLoading, isError } = useGetEventsQuery();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     if (isLoading || isError) return;

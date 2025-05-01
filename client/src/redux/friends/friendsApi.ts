@@ -15,19 +15,15 @@ export const friendsApi = createApi({
             return headers;
         }
     }),
-    tagTypes: ['FriendRequest', 'User'],
+    tagTypes: ['FriendRequest', 'User', 'Auth'],
     endpoints: (builder) => ({
         getRequests: builder.query<IFriendRequest[], void>({
-            query: () => ({
-                url: '/pending',
-                method: 'GET'
-            })
+            query: () => '/pending',
+            providesTags: ['FriendRequest'],
         }),
         getPending: builder.query<IFriendRequest[], string>({
-            query: (userId) => ({
-                url: `/pending/${userId}`,
-                method: 'GET',
-            })
+            query: (userId) => `/pending/${userId}`,
+            providesTags: ['FriendRequest'],
         }),
         sendRequest: builder.mutation<IFriendRequest, SendFriendRequestPayload>({
             query: (body) => ({
@@ -35,7 +31,7 @@ export const friendsApi = createApi({
                 method: 'POST',
                 body
             }),
-            invalidatesTags: ['FriendRequest'],
+            invalidatesTags: ['FriendRequest', 'Auth'],
         }),
         cancelRequest: builder.mutation<void, SendFriendRequestPayload>({
             query: (body) => ({
@@ -43,7 +39,7 @@ export const friendsApi = createApi({
                 method: 'DELETE',
                 body
             }),
-            invalidatesTags: ['FriendRequest']
+            invalidatesTags: ['FriendRequest', 'Auth']
         }),
         checkRequestStatus: builder.query<IFriendRequest | null, { sender: string; receiver: string }>({
             query: ({ sender, receiver }) => ({
@@ -59,21 +55,21 @@ export const friendsApi = createApi({
                 method: 'POST',
                 body
             }),
-            invalidatesTags: ['User']
+            invalidatesTags: ['User', 'Auth']
         }),
         acceptRequest: builder.mutation<void, ProcessFriendRequestPayload>({
             query: ({ requestId }) => ({
                 url: `/accept/${requestId}`,
                 method: 'PUT'
             }),
-            invalidatesTags: ['FriendRequest']
+            invalidatesTags: ['FriendRequest', 'Auth']
         }),
         rejectRequest: builder.mutation<void, ProcessFriendRequestPayload>({
             query: ({ requestId }) => ({
                 url: `/reject/${requestId}`,
                 method: 'PUT'
             }),
-            invalidatesTags: ['FriendRequest']
+            invalidatesTags: ['FriendRequest', 'Auth']
         }),
     })
 });

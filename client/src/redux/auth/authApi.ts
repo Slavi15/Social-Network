@@ -16,6 +16,10 @@ export const api = createApi({
             return headers;
         }
     }),
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMountOrArgChange: true,
+    tagTypes: ['Auth'],
     endpoints: (builder) => ({
         login: builder.mutation<{ user: IUser; accessToken: string }, LoginRequest>({
             query: (credentials) => ({
@@ -23,6 +27,7 @@ export const api = createApi({
                 method: 'POST',
                 body: credentials,
             }),
+            invalidatesTags: ['Auth'],
         }),
         register: builder.mutation<{ user: IUser; accessToken: string }, RegisterRequest>({
             query: (userData) => ({
@@ -30,12 +35,14 @@ export const api = createApi({
                 method: 'POST',
                 body: userData,
             }),
+            invalidatesTags: ['Auth'],
         }),
         logout: builder.mutation<{ success: boolean; message: string }, void>({
             query: () => ({
                 url: '/logout',
                 method: 'POST'
             }),
+            invalidatesTags: ['Auth'],
         }),
         refreshToken: builder.mutation<{ user: IUser; accessToken: string }, void>({
             query: () => ({
@@ -43,6 +50,7 @@ export const api = createApi({
                 method: 'POST',
                 credentials: 'include',
             }),
+            invalidatesTags: ['Auth'],
         }),
     }),
 });

@@ -14,11 +14,7 @@ const FriendConnection: React.FC<FriendConnectionProps> = ({
     connection,
 }) => {
     const { user: currentUser } = useAuth();
-    const { data: user, isLoading } = useGetUserQuery(connection.userId as string, {
-        pollingInterval: 5000,
-        refetchOnFocus: true,
-        refetchOnReconnect: true
-    });
+    const { data: user, isLoading } = useGetUserQuery(connection.userId as string);
     const [sendRequest] = useSendRequestMutation();
 
     const handleAddFriend = async () => {

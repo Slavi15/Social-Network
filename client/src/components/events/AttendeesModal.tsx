@@ -24,11 +24,7 @@ const AttendeesModal: React.FC<AttendeesModalProps> = ({
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 {attendees.map(id => {
-                    const { data: user } = useGetUserQuery(id as string, {
-                        pollingInterval: 5000,
-                        refetchOnFocus: true,
-                        refetchOnReconnect: true
-                    });
+                    const { data: user } = useGetUserQuery(id as string);
 
                     return user && (
                         <FriendInfo

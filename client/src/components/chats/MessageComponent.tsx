@@ -10,7 +10,7 @@ interface MessageProps {
 
 const MessageComponent: React.FC<MessageProps> = ({ msg }) => {
     const { data: user, isLoading, isError } = useGetUserQuery(msg.sender._id as string, {
-        pollingInterval: 5000,
+        pollingInterval: 1000,
         refetchOnFocus: true,
         refetchOnReconnect: true
     });

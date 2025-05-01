@@ -5,8 +5,9 @@ import { useGetUserQuery } from '../../redux/users/usersApi';
 import Posts from "../posts/Posts";
 import Profile, { FriendStatus } from "./Profile";
 import { useCancelRequestMutation, useCheckRequestStatusQuery, useSendRequestMutation, useUnfriendMutation } from '../../redux/friends/friendsApi';
-import styles from '../../styles/components/profile/ProfilePage.module.scss'
 import { IUser } from '../../redux/types/users';
+import { IFriendRequest } from '../../redux/types/friendRequests';
+import styles from '../../styles/components/profile/ProfilePage.module.scss'
 
 const ProfilePage = () => {
     const { user: currentUser } = useAuth();
@@ -15,64 +16,35 @@ const ProfilePage = () => {
     const [cancelRequest] = useCancelRequestMutation();
     const [unfriend] = useUnfriendMutation();
 
-    const { data: profileUser, isLoading: isUserLoading } = useGetUserQuery(userId as string, {
-        pollingInterval: 5000,
-        refetchOnFocus: true,
-        refetchOnReconnect: true
-    });
-    const userPosts = (userId: string) => useGetUserPostsQuery(userId as string, {
-        pollingInterval: 5000,
-        refetchOnFocus: true,
-        refetchOnReconnect: true
-    });
-    
+    const { data: profileUser, isLoading: isUserLoading } = useGetUserQuery(userId as string);
+    const userPosts = (userId: string) => useGetUserPostsQuery(userId as string);
+
     const { data: request } = useCheckRequestStatusQuery({
         sender: currentUser?._id as string,
         receiver: userId as string
-    }, {
-        pollingInterval: 5000,
-        refetchOnFocus: true,
-        refetchOnReconnect: true
     });
-    
-    const handleSendRequest = async () => {
+
+    const handleFriendAction = async (action: () => Promise<IFriendRequest | void>) => {
         if (!currentUser || !userId) return;
 
         try {
-            await sendRequest({
-                sender: currentUser._id,
-                receiver: userId
-            }).unwrap();
+            await action();
         } catch (error) {
-            console.error('Friend request error:', error);
+            console.error('Friend action failed:', error);
         }
     };
 
-    const handleCancelRequest = async () => {
-        if (!currentUser || !userId) return;
+    const handleSendRequest = () => handleFriendAction(() => 
+        sendRequest({ sender: currentUser?._id as string, receiver: userId as string }).unwrap()
+    );
 
-        try {
-            await cancelRequest({
-                sender: currentUser._id,
-                receiver: userId
-            }).unwrap();
-        } catch (err) {
-            console.error("Error cancelling request:", err);
-        }
-    }
+    const handleCancelRequest = () => handleFriendAction(() =>
+        cancelRequest({ sender: currentUser?._id as string, receiver: userId as string }).unwrap()
+    );
 
-    const handleUnfriendRequest = async () => {
-        if (!currentUser || !userId) return;
-
-        try {
-            await unfriend({
-                userId: currentUser._id,
-                friendId: userId
-            }).unwrap();
-        } catch (err) {
-            console.error("Error unfriending:", err);
-        }
-    }
+    const handleUnfriendRequest = () => handleFriendAction(() =>
+        unfriend({ userId: currentUser?._id as string, friendId: userId as string }).unwrap()
+    );
 
     if (isUserLoading) return <div className={styles.loading}>Loading profile...</div>;
     if (!profileUser) return <div className={styles.error}>User not found</div>;
@@ -92,7 +64,7 @@ const ProfilePage = () => {
                     friends: profileUser.friends
                 }}
                 onFriend={
-                    !isCurrentUser && !isFriend && !isPending ? handleSendRequest : 
+                    !isCurrentUser && !isFriend && !isPending ? handleSendRequest :
                         isFriend ? handleUnfriendRequest :
                             isPending ? handleCancelRequest : undefined
                 }

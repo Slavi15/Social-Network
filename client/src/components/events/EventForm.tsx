@@ -5,8 +5,8 @@ import * as Yup from 'yup';
 import { InputField } from "../widgets/InputField";
 import { TextareaField } from "../widgets/TextareaField";
 import ImageUpload from "../posts/ImageUpload";
-import styles from '../../styles/components/events/Events.module.scss'
 import { useAuth } from "../../redux/auth/authHooks";
+import styles from '../../styles/components/events/Events.module.scss'
 
 interface EventFormProps {
     onSuccess?: () => void;
