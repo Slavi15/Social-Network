@@ -15,7 +15,7 @@ export const friendsApi = createApi({
             return headers;
         }
     }),
-    tagTypes: ['FriendRequest', 'User', 'Auth'],
+    tagTypes: ['FriendRequest', 'User', 'Auth', 'FriendStatus'],
     endpoints: (builder) => ({
         getRequests: builder.query<IFriendRequest[], void>({
             query: () => '/pending',
@@ -31,7 +31,11 @@ export const friendsApi = createApi({
                 method: 'POST',
                 body
             }),
-            invalidatesTags: ['FriendRequest', 'Auth'],
+            invalidatesTags: (_result, _error, { sender, receiver }) => [
+                'FriendRequest',
+                'Auth',
+                { type: 'FriendStatus', id: `${sender}-${receiver}` }
+            ]
         }),
         cancelRequest: builder.mutation<void, SendFriendRequestPayload>({
             query: (body) => ({
@@ -39,7 +43,11 @@ export const friendsApi = createApi({
                 method: 'DELETE',
                 body
             }),
-            invalidatesTags: ['FriendRequest', 'Auth']
+            invalidatesTags: (_result, _error, { sender, receiver }) => [
+                'FriendRequest', 
+                'Auth',
+                { type: 'FriendStatus', id: `${sender}-${receiver}` }
+            ]
         }),
         checkRequestStatus: builder.query<IFriendRequest | null, { sender: string; receiver: string }>({
             query: ({ sender, receiver }) => ({
@@ -47,7 +55,10 @@ export const friendsApi = createApi({
                 method: 'GET',
                 params: { sender, receiver }
             }),
-            providesTags: ['FriendRequest']
+            providesTags: (result, _error, { sender, receiver }) =>
+                result
+                    ? [{ type: 'FriendStatus', id: `${sender}-${receiver}` }]
+                    : ['FriendStatus']
         }),
         unfriend: builder.mutation<void, UnfriendPayload>({
             query: (body) => ({

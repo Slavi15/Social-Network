@@ -22,6 +22,8 @@ const ProfilePage = () => {
     const { data: request } = useCheckRequestStatusQuery({
         sender: currentUser?._id as string,
         receiver: userId as string
+    }, {
+        pollingInterval: 1000
     });
 
     const handleFriendAction = async (action: () => Promise<IFriendRequest | void>) => {
