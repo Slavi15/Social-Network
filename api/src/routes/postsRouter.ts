@@ -5,7 +5,7 @@ import { authenticate } from "@/middleware/auth";
 const postsRouter = Router();
 
 postsRouter.get("/", postsController.getPosts);
-postsRouter.get("/:user_id", postsController.getUserPosts);
+postsRouter.get("/:user_id/current/:currentId", postsController.getUserPosts);
 postsRouter.get("/visible/:user_id", postsController.getVisiblePosts);
 postsRouter.get("/:post_id", postsController.getPost);
 postsRouter.post("/", postsController.createPost);

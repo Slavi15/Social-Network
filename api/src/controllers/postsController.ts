@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { NextFunction, Request, Response } from "express";
-import { IComment, PostModel } from "@/models/posts.ts";
+import { IComment, IPost, PostModel } from "@/models/posts.ts";
 import { UserModel } from "@/models/users.ts";
 import { validatePost } from "@/validators/postsValidator.ts";
 import { AppError, HttpCode } from "@/exceptions/AppError.ts";
@@ -40,9 +40,48 @@ class PostController {
 
     public getUserPosts = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { user_id } = req.params;
+            const { user_id, currentId } = req.params;
 
-            const posts = await PostModel.find({ user_id })
+            if (!Types.ObjectId.isValid(user_id) || !Types.ObjectId.isValid(currentId)) {
+                return next(new AppError({
+                    httpCode: HttpCode.BAD_REQUEST,
+                    description: "Invalid IDs!"
+                }));
+            }
+
+            const user = await UserModel.findById(user_id);
+
+            if (!user) {
+                return next(new AppError({
+                    httpCode: HttpCode.NOT_FOUND,
+                    description: "User not found!"
+                }));
+            }
+
+            const isFriend: boolean = !!user.friends.includes(currentId);
+            let query: any = { user_id };
+            
+            if (user_id !== currentId) {
+                if (isFriend) {
+                    query = {
+                        ...query,
+                        $or: [
+                            { privacy: Privacy.PUBLIC },
+                            {
+                                privacy: Privacy.FRIENDS,
+                                user_id: { $in: user.friends }
+                            }
+                        ]
+                    };
+                } else {
+                    query = {
+                        ...query,
+                        privacy: Privacy.PUBLIC
+                    };
+                }
+            }
+
+            const posts = await PostModel.find(query)
                 .populate("user_id", "username email profile_picture friends")
                 .populate({
                     path: "comments",

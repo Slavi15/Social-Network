@@ -8,7 +8,7 @@ export interface IUser extends Document {
     email: string;
     password: string;
     profile_picture: string;
-    friends: IUser[];
+    friends: Types.DocumentArray<IUser>;
     chats: IChat[];
     is_active: boolean;
     comparePassword(candidatePassword: string): Promise<boolean>;
