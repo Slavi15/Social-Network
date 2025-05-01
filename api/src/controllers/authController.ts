@@ -34,7 +34,7 @@ class AuthController {
             if (!isMatch) {
                 return next(new AppError({
                     httpCode: HttpCode.BAD_REQUEST,
-                    description: "Internal server error",
+                    description: "Incorrect password!",
                 }));
             }
 
@@ -51,7 +51,7 @@ class AuthController {
         } catch (err) {
             return next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-                description: "Internal server error",
+                description: "Unsuccessful login!",
             }));
         }
     };
@@ -65,7 +65,7 @@ class AuthController {
             if (existingUser) {
                 return next(new AppError({
                     httpCode: HttpCode.BAD_REQUEST,
-                    description: "Internal server error",
+                    description: "User already exists!",
                 }));
             }
 
@@ -91,9 +91,9 @@ class AuthController {
                 message: "Successfully registered",
             });
         } catch (err) {
-            return next(new AppError({
+            next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
-                description: "Internal server error",
+                description: "Unsuccessful registration!",
             }));
         }
     };
@@ -132,7 +132,7 @@ class AuthController {
                 message: 'Logged out successfully',
             });
         } catch (err) {
-            return next(new AppError({
+            next(new AppError({
                 httpCode: HttpCode.INTERNAL_SERVER_ERROR,
                 description: 'Logout failed',
             }));
