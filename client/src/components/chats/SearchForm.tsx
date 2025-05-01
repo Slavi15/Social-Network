@@ -8,7 +8,7 @@ import FriendInfo from "../profile/FriendInfo";
 
 interface SearchFormProps {
     onToggle?: (user: IUser) => void;
-    shouldCreateChat: boolean;
+    shouldCreateChat: boolean;  
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({
