@@ -16,12 +16,22 @@ const ProfilePage = () => {
     const [cancelRequest] = useCancelRequestMutation();
     const [unfriend] = useUnfriendMutation();
 
-    const { data: profileUser, isLoading: isUserLoading } = useGetUserQuery(userId as string);
+    const { data: profileUser, isLoading: isUserLoading } = useGetUserQuery(userId as string, {
+        pollingInterval: 1000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true
+    });
     const userPosts = (userId: string) => useGetUserPostsQuery(userId as string);
 
     const { data: request } = useCheckRequestStatusQuery({
         sender: currentUser?._id as string,
         receiver: userId as string
+    }, {
+        pollingInterval: 1000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true
     });
 
     const handleFriendAction = async (action: () => Promise<IFriendRequest | void>) => {

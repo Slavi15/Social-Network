@@ -12,7 +12,8 @@ const MessageComponent: React.FC<MessageProps> = ({ msg }) => {
     const { data: user, isLoading, isError } = useGetUserQuery(msg.sender._id as string, {
         pollingInterval: 1000,
         refetchOnFocus: true,
-        refetchOnReconnect: true
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true
     });
 
     if (isLoading || isError) return null;

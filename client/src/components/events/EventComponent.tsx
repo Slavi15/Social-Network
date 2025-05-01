@@ -12,7 +12,12 @@ const EventComponent = () => {
     const { user } = useAuth();
     const { eventId } = useParams<{ eventId: string }>();
 
-    const { data: event, isLoading, isError } = useGetEventByIdQuery(eventId as string);
+    const { data: event, isLoading, isError } = useGetEventByIdQuery(eventId as string, {
+        pollingInterval: 1000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true
+    });
     const [joinEvent] = useJoinEventMutation();
     const [leaveEvent] = useLeaveEventMutation();
 

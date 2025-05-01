@@ -24,7 +24,12 @@ const CreatorsModal: React.FC<CreatorsModalProps> = ({
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 {creators.map(id => {
-                    const { data: user } = useGetUserQuery(id as string);
+                    const { data: user } = useGetUserQuery(id as string, {
+                        pollingInterval: 1000,
+                        refetchOnFocus: true,
+                        refetchOnReconnect: true,
+                        refetchOnMountOrArgChange: true
+                    });
 
                     return user && (
                         <FriendInfo

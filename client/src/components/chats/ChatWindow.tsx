@@ -19,15 +19,23 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const socket = getSocket();
 
-    const { data: chat } = useGetChatQuery({ chatId: chatId, userId: userId }, {
+    const { data: chat } = useGetChatQuery({ 
+        chatId: chatId, 
+        userId: userId 
+    }, {
         pollingInterval: 1000,
         refetchOnFocus: true,
-        refetchOnReconnect: true
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true
     });
-    const { data: messages, isLoading, isError, refetch } = useGetMessagesQuery({ chatId: chatId, userId: userId }, {
+    const { data: messages, isLoading, isError, refetch } = useGetMessagesQuery({ 
+        chatId: chatId, 
+        userId: userId 
+    }, {
         pollingInterval: 1000,
         refetchOnFocus: true,
-        refetchOnReconnect: true
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true
     });
 
     useEffect(() => {

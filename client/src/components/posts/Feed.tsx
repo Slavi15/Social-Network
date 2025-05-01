@@ -5,7 +5,12 @@ import Posts from "./Posts";
 
 const Feed = () => {
     const { user } = useAuth();
-    const visiblePostsQuery = (userId: string) => useGetVisiblePostsQuery(userId as string);
+    const visiblePostsQuery = (userId: string) => useGetVisiblePostsQuery(userId as string, {
+        pollingInterval: 1000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true
+    });
 
     return (
         <div>

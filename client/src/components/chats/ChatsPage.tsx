@@ -12,7 +12,8 @@ const ChatsPage = () => {
     const { data: chats, isLoading, isError } = useGetChatsQuery(userId as string, {
         pollingInterval: 1000,
         refetchOnFocus: true,
-        refetchOnReconnect: true
+        refetchOnReconnect: true,
+        refetchOnMountOrArgChange: true
     });
     const [selectedChat, setSelectedChat] = useState<string | null>();
 
