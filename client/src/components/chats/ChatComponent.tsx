@@ -13,11 +13,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 }) => {
     const { user } = useAuth();
     const otherId = chat.participants.find(userId => userId !== user?._id as string);
-    const { data: otherUser } = useGetUserQuery(otherId as string, {
-        pollingInterval: 1000,
-        refetchOnFocus: true,
-        refetchOnReconnect: true
-    });
+    const { data: otherUser } = useGetUserQuery(otherId as string);
 
     return (
         <div className={styles.chatComponent}>
