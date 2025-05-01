@@ -35,13 +35,15 @@ export const store = configureStore({
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
         })
-        .concat(api.middleware)
-        .concat(postsApi.middleware)
-        .concat(usersApi.middleware)
-        .concat(uploadsApi.middleware)
-        .concat(friendsApi.middleware)
-        .concat(chatsApi.middleware)
-        .concat(eventsApi.middleware),
+        .concat(
+            api.middleware,
+            postsApi.middleware,
+            usersApi.middleware,
+            uploadsApi.middleware,
+            friendsApi.middleware,
+            chatsApi.middleware,
+            eventsApi.middleware
+        ),
 });
 
 export const persistor = persistStore(store);

@@ -23,9 +23,9 @@ export const usersApi = createApi({
                 result
                     ? [
                         ...result.map(({ _id }) => ({ type: 'User' as const, id: _id })),
-                        { type: 'User', id: 'LIST' },
+                        { type: 'User' as const, id: 'LIST' }
                     ]
-                    : [{ type: 'User', id: 'LIST' }],
+                    : [{ type: 'User' as const, id: 'LIST' }],
         }),
         getUsersByName: builder.mutation<IUser[], string>({
             query: (username) => ({

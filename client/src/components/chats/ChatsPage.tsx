@@ -9,7 +9,11 @@ import styles from '../../styles/components/chats/ChatsPage.module.scss'
 
 const ChatsPage = () => {
     const { userId } = useParams<{ userId: string }>();
-    const { data: chats, isLoading, isError } = useGetChatsQuery(userId as string);
+    const { data: chats, isLoading, isError } = useGetChatsQuery(userId as string, {
+        pollingInterval: 5000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
     const [selectedChat, setSelectedChat] = useState<string | null>();
 
     if (isLoading || isError) return;

@@ -12,7 +12,11 @@ const EventPosts: React.FC<EventPostsProps> = ({
     eventId,
     eventName
 }) => {
-    const { data: posts, isLoading, isError } = useGetEventPostsQuery(eventId);
+    const { data: posts, isLoading, isError } = useGetEventPostsQuery(eventId as string, {
+        pollingInterval: 5000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
 
     if (isLoading) return <div>Loading posts...</div>;
     if (isError) return <div>Error loading posts</div>;

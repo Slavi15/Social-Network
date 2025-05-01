@@ -11,7 +11,10 @@ interface PostsProps {
     userId: string;
 }
 
-const Posts = ({ getPosts, userId }: PostsProps) => {
+const Posts: React.FC<PostsProps> = ({ 
+    getPosts, 
+    userId 
+}) => {
     const { data: posts, isLoading, error } = getPosts(userId as string);
 
     if (isLoading) return <div className={styles.loading}>Loading posts...</div>;

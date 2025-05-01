@@ -14,7 +14,11 @@ const FriendConnection: React.FC<FriendConnectionProps> = ({
     connection,
 }) => {
     const { user: currentUser } = useAuth();
-    const { data: user, isLoading } = useGetUserQuery(connection.userId as string);
+    const { data: user, isLoading } = useGetUserQuery(connection.userId as string, {
+        pollingInterval: 5000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
     const [sendRequest] = useSendRequestMutation();
 
     const handleAddFriend = async () => {
@@ -44,9 +48,9 @@ const FriendConnection: React.FC<FriendConnectionProps> = ({
 
             <ConnectionsModal user={user} connection={connection} />
 
-            <button 
+            <button
                 className={styles.addButton}
-                onClick={handleAddFriend}    
+                onClick={handleAddFriend}
             >
                 Add Friend
             </button>

@@ -19,8 +19,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const socket = getSocket();
 
-    const { data: chat } = useGetChatQuery({ chatId: chatId, userId: userId });
-    const { data: messages, isLoading, isError, refetch } = useGetMessagesQuery({ chatId: chatId, userId: userId });
+    const { data: chat } = useGetChatQuery({ chatId: chatId, userId: userId }, {
+        pollingInterval: 5000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
+    const { data: messages, isLoading, isError, refetch } = useGetMessagesQuery({ chatId: chatId, userId: userId }, {
+        pollingInterval: 5000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

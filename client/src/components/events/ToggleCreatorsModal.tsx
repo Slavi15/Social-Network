@@ -33,8 +33,6 @@ const ToggleCreatorsModal: React.FC<ToggleCreatorsProps> = ({
     const handleAddCreator = async (user: IUser) => {
         if (!user) return;
 
-        console.log(user);
-
         try {
             await addCreator({
                 eventId,

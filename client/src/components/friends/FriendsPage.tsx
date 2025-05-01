@@ -7,8 +7,16 @@ import styles from '../../styles/components/friends/Friends.module.scss'
 
 const FriendsPage = () => {
     const { user } = useAuth();
-    const pendingRequests = (userId: string) => useGetPendingQuery(userId as string);
-    const mutualFriends = (userId: string) => useGetMutualFriendsQuery(userId as string);
+    const pendingRequests = (userId: string) => useGetPendingQuery(userId as string, {
+        pollingInterval: 5000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
+    const mutualFriends = (userId: string) => useGetMutualFriendsQuery(userId as string, {
+        pollingInterval: 5000,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
 
     return (
         <div className={styles.friendPage}>
