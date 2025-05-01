@@ -10,7 +10,7 @@ export const generateAccessToken = (userId: string): string => {
 
 export const generateRefreshToken = (userId: string): string => {
     return jwt.sign({ _id: userId }, env.JWT_REFRESH_SECRET, {
-        expiresIn: "7m",
+        expiresIn: "7d",
     });
 };
 
@@ -20,7 +20,8 @@ export const setRefreshToken = (res: Response, userId: string): void => {
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: env.NODE_ENV === "production",
-        sameSite: env.NODE_ENV === "production" ? "none" : "lax" as const
+        sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 };
 
