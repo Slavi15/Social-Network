@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
+import { IPost } from "../types/posts";
 
 export const postsApi = createApi({
     reducerPath: 'postsApi',
@@ -19,9 +20,9 @@ export const postsApi = createApi({
             query: () => '',
             providesTags: ['Posts'],
         }),
-        getUserPosts: builder.query({
-            query: (userId) => ({
-                url: `/${userId}`,
+        getUserPosts: builder.query<IPost[], { userId: string; currentId: string; }>({
+            query: ({ userId, currentId }) => ({
+                url: `/${userId}/current/${currentId}`,
                 method: 'GET'
             }),
             providesTags: ['Posts'],
