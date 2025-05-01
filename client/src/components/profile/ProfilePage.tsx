@@ -60,7 +60,7 @@ const ProfilePage = () => {
     if (!profileUser) return <div className={styles.error}>User not found</div>;
 
     const isCurrentUser: boolean = currentUser?._id === userId;
-    const isFriend: boolean = !!currentUser?.friends?.find((friend: IUser) => friend._id === userId);
+    const isFriend: boolean = !!profileUser?.friends?.find((friend: IUser) => friend._id === userId);
     const isPending: boolean = request?.status as string === "PENDING";
 
     return (
