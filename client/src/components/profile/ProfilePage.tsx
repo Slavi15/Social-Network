@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useAuth } from "../../redux/auth/authHooks";
-import { useGetUserPostsQuery } from "../../redux/posts/postsApi";
+import { useGetUserPostsQuery, useGetVisiblePostsQuery } from "../../redux/posts/postsApi";
 import { useGetUserQuery } from '../../redux/users/usersApi';
 import Posts from "../posts/Posts";
 import Profile, { FriendStatus } from "./Profile";
@@ -22,7 +22,19 @@ const ProfilePage = () => {
         refetchOnReconnect: true,
         refetchOnMountOrArgChange: true
     });
-    const userPosts = (userId: string) => useGetUserPostsQuery(userId as string);
+    const userPosts = (userId: string) =>
+        currentUser?._id as string === userId
+            ? useGetUserPostsQuery(userId as string, {
+                pollingInterval: 1000,
+                refetchOnFocus: true,
+                refetchOnReconnect: true,
+                refetchOnMountOrArgChange: true
+            }) : useGetVisiblePostsQuery(userId as string, {
+                pollingInterval: 1000,
+                refetchOnFocus: true,
+                refetchOnReconnect: true,
+                refetchOnMountOrArgChange: true
+            });
 
     const { data: request } = useCheckRequestStatusQuery({
         sender: currentUser?._id as string,
@@ -44,7 +56,7 @@ const ProfilePage = () => {
         }
     };
 
-    const handleSendRequest = () => handleFriendAction(() => 
+    const handleSendRequest = () => handleFriendAction(() =>
         sendRequest({ sender: currentUser?._id as string, receiver: userId as string }).unwrap()
     );
 
