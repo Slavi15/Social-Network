@@ -66,21 +66,21 @@ export const friendsApi = createApi({
                 method: 'POST',
                 body
             }),
-            invalidatesTags: ['User', 'Auth']
+            invalidatesTags: ['User', 'Auth', 'FriendStatus']
         }),
         acceptRequest: builder.mutation<void, ProcessFriendRequestPayload>({
             query: ({ requestId }) => ({
                 url: `/accept/${requestId}`,
                 method: 'PUT'
             }),
-            invalidatesTags: ['FriendRequest', 'Auth']
+            invalidatesTags: ['FriendRequest', 'Auth', 'FriendStatus']
         }),
         rejectRequest: builder.mutation<void, ProcessFriendRequestPayload>({
             query: ({ requestId }) => ({
                 url: `/reject/${requestId}`,
                 method: 'PUT'
             }),
-            invalidatesTags: ['FriendRequest', 'Auth']
+            invalidatesTags: ['FriendRequest', 'Auth', 'FriendStatus']
         }),
     })
 });
