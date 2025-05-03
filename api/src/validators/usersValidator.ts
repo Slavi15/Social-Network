@@ -5,7 +5,7 @@ export const validateUser = (data: Partial<IUser>): string | null => {
         return "Username must be between 3-50 characters!";
     };
 
-    if (!data.email || !/^[A-Za-z0-9]+@fmi.uni-sofia.bg$/.test(data.email)) {
+    if (!data.email || !/^[A-Za-z0-9.-_!]+@fmi.uni-sofia.bg$/.test(data.email)) {
         return "Invalid email format!";
     };
 
